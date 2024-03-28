@@ -1,13 +1,13 @@
 <x-app-layout>
     <div class="flex">
         <!-- ページ一覧部分 -->
-        <x-page_list :pages="$pages" />
+        <x-page-list :pages="$pages" />
         
         <!-- ゴミ箱の中身一覧 -->
         <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <!-- 一括削除ボタン -->
-            <form method="POST" action="{{ route('pages.deleteAll') }}">
+            <form method="POST" action="{{ route('pages.delete_all') }}">
                 @csrf
                 @method('DELETE')
                 <button type="submit" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
@@ -32,8 +32,8 @@
                                 @endforeach
                             </ul>
                             <!-- ページ操作のボタン -->
-                            <button type="submit" class="mt-4" onclick="submitForm('DELETE', '{{ route('pages.deleteSelected') }}')">{{ __('選択したページを削除') }}</button>
-                            <button type="submit" class="mt-4" onclick="submitForm('PATCH', '{{ route('pages.restoreSelected') }}')">{{ __('選択したページを復元') }}</button>
+                            <button type="submit" class="mt-4" onclick="submitForm('DELETE', '{{ route('pages.delete_selected') }}')">{{ __('選択したページを削除') }}</button>
+                            <button type="submit" class="mt-4" onclick="submitForm('PATCH', '{{ route('pages.restore_selected') }}')">{{ __('選択したページを復元') }}</button>
                         </form>
                     @else
                         <p>{{ __('論理削除されたページはありません。') }}</p>

@@ -12,6 +12,6 @@
     
     <div class="flex">
         <!-- ページ一覧部分 -->
-        <x-page_list :pages="$pages" />
+        <x-page-list :pages="$pages" />
     </div>
 </x-app-layout>

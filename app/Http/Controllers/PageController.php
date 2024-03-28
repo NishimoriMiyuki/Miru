@@ -22,8 +22,7 @@ class PageController extends Controller
     public function create()
     {
         $page = new Page;
-        $page->title = "title";
-        $page->content = "content";
+        $page->title = '無題';
         $page->user_id = auth()->id();
         $page->save();
         

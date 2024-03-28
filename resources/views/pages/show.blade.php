@@ -1,7 +1,7 @@
 <x-app-layout>
     <div class="flex">
         <!-- ページ一覧部分 -->
-        <x-page_list :pages="$pages" />
+        <x-page-list :pages="$pages" />
         
         <!-- メインコンテンツ部分 -->
         <div class="w-3/4 max-w-2xl mx-auto p-4 sm:p-6 lg:p-8">
@@ -12,14 +12,13 @@
                 <!-- タイトル入力欄 -->
                 <textarea
                     name="title"
-                    placeholder="{{ __('ページタイトルを入力') }}"
+                    placeholder="{{ __('無題') }}"
                     class="block w-full h-10 border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 rounded-md shadow-sm"
                 >{{ $select_page->title }}</textarea>
                 <x-input-error :messages="$errors->get('title')" class="mt-2" />
                 <!-- コンテンツ入力欄 -->
                 <textarea
                     name="content"
-                    placeholder="{{ __('あなたの考えを書きましょう') }}"
                     class="block w-full h-40 border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 rounded-md shadow-sm"
                     style="resize: horizontal;"
                 >{{ $select_page->content }}</textarea>
