@@ -12,7 +12,7 @@ class PageController extends Controller
      */
     public function index()
     {
-        $pages = Page::where('user_id', auth()->id())->get();
+        $pages = auth()->user()->pages;
         return view('pages.index', compact('pages'));
     }
 
@@ -47,7 +47,7 @@ class PageController extends Controller
             abort(403);
         }
         
-        $pages = Page::where('user_id', auth()->id())->get();
+        $pages = auth()->user()->pages;
         return view('pages.show', ['select_page' => $page, 'pages' => $pages]);
     }
 
@@ -93,24 +93,17 @@ class PageController extends Controller
     
     public function trashed()
     {
-        $pages = Page::where('user_id', auth()->id())->get();
+        $pages = auth()->user()->pages;
         
-        $trashedPages = Page::onlyTrashed()
-            ->where('user_id', auth()->id())
-            ->paginate(5);
+        $trashedPages = auth()->user()->pages()->onlyTrashed()->paginate(5);
             
         return view('pages.trashed', compact('trashedPages', 'pages'));
     }
     
     public function deleteAll()
     {
-        $trashedPages = Page::onlyTrashed()->where('user_id', auth()->id())->get();
-        
         // すべての論理削除されたページを永久に削除
-        foreach ($trashedPages as $trashedPage) 
-        {
-            $trashedPage->forceDelete();
-        }
+        auth()->user()->pages()->onlyTrashed()->forceDelete();
         
         session()->flash('message', 'ゴミ箱の中身を全て削除しました');
         return redirect()->route('pages.index');
@@ -119,12 +112,9 @@ class PageController extends Controller
     public function deleteSelected(Request $request)
     {
         $selectedPagesId = $request->input('selectedPages');
-        $pages = Page::onlyTrashed()->where('user_id', auth()->id())->whereIn('id', $selectedPagesId)->get();
         
-        foreach ($pages as $page)
-        {
-            $page->forceDelete();
-        }
+        // idが一致するページを永久に削除
+        auth()->user()->pages()->onlyTrashed()->whereIn('id', $selectedPagesId)->forceDelete();
         
         session()->flash('message', '選択されたページを削除しました。');
         return redirect()->route('pages.trashed');
@@ -134,7 +124,7 @@ class PageController extends Controller
     {
         $selectedPagesId = $request->input('selectedPages');
 
-        Page::where('user_id', auth()->id())->whereIn('id', $selectedPagesId)->restore();
+        auth()->user()->pages()->whereIn('id', $selectedPagesId)->restore();
 
         session()->flash('message', '選択されたページを復元しました。');
         return redirect()->route('pages.index');

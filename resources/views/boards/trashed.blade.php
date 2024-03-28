@@ -1,13 +1,13 @@
 <x-app-layout>
     <div class="flex">
         <!-- ページ一覧部分 -->
-        <x-page-list :pages="$pages" />
+        <x-board-list :boards="$boards" />
         
         <!-- ゴミ箱の中身一覧 -->
         <div class="py-12">
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
                 <!-- 一括削除ボタン -->
-                <form method="POST" action="{{ route('pages.delete_all') }}">
+                <form method="POST" action="{{ route('boards.delete_all') }}">
                     @csrf
                     @method('DELETE')
                     <button type="submit" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
@@ -17,31 +17,30 @@
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                     <!-- 各ページ -->
                     <div class="p-6 bg-white border-b border-gray-200">
-                        @if ($trashedPages->count())
+                        @if ($trashedBoards->count())
                             <!-- ページ操作のためのフォーム -->
-                            <form id="pageForm" method="POST" action="">
+                            <form id="boardForm" method="POST" action="">
                                 @csrf
                                 <ul>
-                                    @foreach ($trashedPages as $trashedPage)
+                                    @foreach ($trashedBoards as $trashedBoard)
                                         <li class="mb-4">
                                             <!-- チェックボックス -->
-                                            <input type="checkbox" name="selectedPages[]" value="{{ $trashedPage->id }}">
-                                            <h2 class="font-bold text-xl">{{ $trashedPage->title }}</h2>
-                                            <p>{{ $trashedPage->content }}</p>
+                                            <input type="checkbox" name="selectedBoards[]" value="{{ $trashedBoard->id }}">
+                                            <h2 class="font-bold text-xl">{{ $trashedBoard->name }}</h2>
                                         </li>
                                     @endforeach
                                 </ul>
                                 <!-- ページ操作のボタン -->
-                                <button type="submit" class="mt-4" onclick="submitForm('DELETE', '{{ route('pages.delete_selected') }}')">{{ __('選択したページを削除') }}</button>
-                                <button type="submit" class="mt-4" onclick="submitForm('PATCH', '{{ route('pages.restore_selected') }}')">{{ __('選択したページを復元') }}</button>
+                                <button type="submit" class="mt-4" onclick="submitForm('DELETE', '{{ route('boards.delete_selected') }}')">{{ __('選択したボードを削除') }}</button>
+                                <button type="submit" class="mt-4" onclick="submitForm('PATCH', '{{ route('boards.restore_selected') }}')">{{ __('選択したボードを復元') }}</button>
                             </form>
                         @else
-                            <p>{{ __('削除されたページはありません。') }}</p>
+                            <p>{{ __('削除されたボードはありません。') }}</p>
                         @endif
                     </div>
                 </div>
                 <!-- ページネーション -->
-                {{ $trashedPages->links() }}
+                {{ $trashedBoards->links() }}
             </div>
         </div>
     </div>
@@ -49,7 +48,7 @@
 <script>
     // フォームの送信方法と送信先を設定するメソッド
     function submitForm(method, action) {
-        var form = document.getElementById('pageForm');
+        var form = document.getElementById('boardForm');
         form.method = 'POST';
         form.action = action;
         var hiddenInput = document.createElement('input');
