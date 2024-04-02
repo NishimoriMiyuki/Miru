@@ -55,7 +55,7 @@ Route::resource('boards', BoardController::class)
 Route::get('/board_rows/create/{board}', [BoardRowController::class, 'create'])->name('board_rows.create')->middleware(['auth', 'verified']);
 
 Route::resource('board_rows', BoardRowController::class)
-    ->only(['store', 'update', 'destroy'])
+    ->only(['store', 'update', 'destroy', 'edit'])
     ->middleware(['auth', 'verified']);
     
 # questionsルート

@@ -51,4 +51,20 @@ class BoardRowController extends Controller
         session()->flash('message', '削除しました');
         return redirect()->route('boards.show', $boardId);
     }
+    
+    public function edit(BoardRow $boardRow)
+    {
+        if ($boardRow->board->user_id !== auth()->id()) 
+        {
+            abort(403);
+        }
+        
+        $boards = auth()->user()->boards;
+        $difficultyLevels = DifficultyLevel::all();
+        $statuses = Status::all();
+        $board = $boardRow->board;
+        $tags = $board->tags;
+        
+        return view('board_rows.edit', compact('boards', 'difficultyLevels', 'statuses', 'board', 'boardRow', 'tags'));
+    }
 }
