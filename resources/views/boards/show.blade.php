@@ -21,25 +21,30 @@
             </div>
             
             <!-- boardRow表示 -->
-            <div class="mt-4">
-                <div class="flex flex-wrap">
-                    @foreach ($board->boardRows as $boardRow)
-                        <div class="w-1/4 p-4">
-                            <div class="bg-white rounded shadow p-4">
-                                <a href="{{ route('board_rows.edit', $boardRow) }}">
-                                    <h2 class="text-xl">{{ $boardRow->title }}</h2>
-                                    <p>{{ $boardRow->quiz_content }}</p>
-                                </a>
-                                <!-- 削除ボタン -->
-                                <form action="{{ route('board_rows.destroy', $boardRow) }}" method="POST">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit">削除</button>
-                                </form>
-                            </div>
+            <div class="mt-4 flex flex-wrap">
+                @foreach ($statuses as $status)
+                    <div class="w-1/4 p-4">
+                        <div class="bg-white rounded shadow p-4">
+                            <h2 class="text-xl">{{ $status->type }}</h2>
+                            @if (isset($groupedRows[$status->id]))
+                                @foreach ($groupedRows[$status->id] as $boardRow)
+                                    <div class="mt-4 shadow-md flex">
+                                        <a href="{{ route('board_rows.edit', $boardRow) }}">
+                                            <h3 class="text-lg">{{ $boardRow->title }}</h3>
+                                            <p>{{ $boardRow->quiz_content }}</p>
+                                        </a>
+                                        <!-- 削除ボタン -->
+                                        <form action="{{ route('board_rows.destroy', $boardRow) }}" method="POST">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit">削除</button>
+                                        </form>
+                                    </div>
+                                @endforeach
+                            @endif
                         </div>
-                    @endforeach
-                </div>
+                    </div>
+                @endforeach
             </div>
     
         </div>
