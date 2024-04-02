@@ -96,6 +96,7 @@
                 <!-- フッター -->
                 <div class="footer">
                     <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700">保存</button>
+                    <a href="{{ route('boards.show', $board) }}">戻る</a>
                 </div>
             </form>
         </div>
