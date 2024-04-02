@@ -16,24 +16,24 @@
                 <div class="body">
                     <div class="mb-3">
                         <label for="title" class="block text-sm font-medium text-gray-700">タイトル:</label>
-                        <input type="text" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" id="title" name="title">
+                        <input type="text" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" id="title" name="title" value="{{ $boardRow->title }}">
                     </div>
                     <!-- 問題 -->
                     <div class="mb-3">
                         <label for="quiz-content" class="block text-sm font-medium text-gray-700">問題:</label>
-                        <textarea class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" id="quiz-content" name="quiz_content"></textarea>
+                        <textarea class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" id="quiz-content" name="quiz_content" >{{ $boardRow->quiz_content }}</textarea>
                     </div>
                     <!-- 答え -->
                     <div class="mb-3">
                         <label for="quiz-answer" class="block text-sm font-medium text-gray-700">答え:</label>
-                        <textarea class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" id="quiz-answer" name="quiz_answer"></textarea>
+                        <textarea class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" id="quiz-answer" name="quiz_answer">{{ $boardRow->quiz_answer }}</textarea>
                     </div>
                     <!-- 難易度 -->
                     <div class="mb-3">
                         <label for="difficulty-level" class="block text-sm font-medium text-gray-700">難易度:</label>
                         <select class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" id="difficulty-level" name="difficulty_level_id">
                             @foreach ($difficultyLevels as $difficultyLevel)
-                                <option value="{{ $difficultyLevel->id }}">{{ $difficultyLevel->type }}</option>
+                                <option value="{{ $difficultyLevel->id }}" {{ $boardRow->difficulty_level_id == $difficultyLevel->id ? 'selected' : '' }}>{{ $difficultyLevel->type }}</option>
                             @endforeach
                         </select>
                     </div>
@@ -41,6 +41,12 @@
                     <div class="mb-3">
                         <label for="tagField" class="block text-sm font-medium text-gray-700">タグ:</label>
                         <div id="tagContainer" data-board-row-id={{ $boardRow->id }}>
+                            @foreach($boardRow->tags as $boardRowTag)
+                                <div class="tagField relative">
+                                    <input type="text" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" name="tag[]" data-tag-id="{{ $boardRowTag->id }}" value="{{ $boardRowTag->name }}" readonly>
+                                    <button class="absolute top-0 right-0 mt-2 mr-2 tagClear" type="button">×</button>
+                                </div>
+                            @endforeach
                             <div class="tagField relative">
                                 <input type="text" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" name="tag[]">
                             </div>
@@ -64,7 +70,7 @@
                         <label for="status" class="block text-sm font-medium text-gray-700">状態:</label>
                         <select class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" id="status" name="status_id">
                             @foreach ($statuses as $status)
-                                <option value="{{ $status->id }}" {{ $status->id == 2 ? 'selected' : '' }}>{{ $status->type }}</option>
+                                <option value="{{ $status->id }}" {{ $boardRow->status_id == $status->id ? 'selected' : '' }}>{{ $status->type }}</option>
                             @endforeach
                         </select>
                     </div>
@@ -77,7 +83,20 @@
                             <div class="p-4 bg-white">
                                 <input type="text" id="questionInput" class="w-full px-4 py-2 border border-gray-300" placeholder="質問を入力してください">
                                 <button id="submitQuestion" data-board-row-id="{{ $boardRow->id }}" class="w-full mt-2 px-4 py-2 text-white bg-blue-500">送信</button>
-                                <ul id="questionList" class="mt-2 space-y-2"></ul>
+                                <ul id="questionList" class="mt-2 space-y-2">
+                                    @foreach($boardRow->questions as $boardRowQuestion)
+                                        <li class="list-group-item" data-question-id={{ $boardRowQuestion->id}}>
+                                            {{ $boardRowQuestion->content }}
+                                            <button type="button" onclick="deleteQuestion({{ $boardRowQuestion->id }})">削除</button>
+                                            <div style="float: right;">
+                                                <input type="radio" name="{{ 'choice'.$boardRowQuestion->id }}" value="yes" onclick="saveChoice({{ $boardRowQuestion->id }}, this.value)" {{ $boardRowQuestion->answer ? 'checked' : '' }}>
+                                                <label>Yes</label>
+                                                <input type="radio" name="{{ 'choice'.$boardRowQuestion->id }}" value="no" onclick="saveChoice({{ $boardRowQuestion->id }}, this.value)" {{ !$boardRowQuestion->answer ? 'checked' : '' }}>
+                                                <label>No</label>
+                                            </div>
+                                        </li>
+                                    @endforeach
+                                </ul>
                             </div>
                         </div>
                         <div>
@@ -87,7 +106,14 @@
                             <div class="p-4 bg-white">
                                 <input type="text" id="commentInput" class="w-full px-4 py-2 border border-gray-300" placeholder="コメントを入力してください">
                                 <button id="submitComment" data-board-row-id="{{ $boardRow->id }}" class="w-full mt-2 px-4 py-2 text-white bg-blue-500">送信</button>
-                                <ul id="commentList" class="mt-2 space-y-2"></ul>
+                                <ul id="commentList" class="mt-2 space-y-2">
+                                    @foreach($boardRow->comments as $boardRowComment)
+                                        <li class="list-group-item" data-comment-id={{ $boardRowComment->id }}>
+                                            {{ $boardRowComment->content }}
+                                            <button type="button" onclick="deleteComment({{ $boardRowComment->id }})">削除</button>
+                                        </li>
+                                    @endforeach
+                                </ul>
                             </div>
                         </div>
                     </div>
@@ -147,64 +173,66 @@
     });
     
     // 質問の送信ボタン
-    $('#submitQuestion').click(function(e){
-        e.preventDefault();
-    
-        var questionInput = $('#questionInput');
-        var boardRowId = $(this).data('boardRowId');
-        var questionList = $('#questionList');
-    
-        $.ajax({
-            url: '/questions/store',
-            method: 'POST',
-            contentType: 'application/json',
-            headers: {
-                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-            },
-            data: JSON.stringify({
-                content: questionInput.val(),
-                board_row_id: boardRowId
-            }),
-            success: function(data) {
-                // リセット
-                questionList.html('');
-                questionInput.val('');
-                
-                // questionの数だけ要素作る
-                $.each(data.success, function(i, question) {
-                    var li = $('<li></li>').text(question.content).addClass('list-group-item').attr('data-question-id', question.id);
+    $(document).ready(function() {
+        $('#submitQuestion').click(function(e){
+            e.preventDefault();
+        
+            var questionInput = $('#questionInput');
+            var boardRowId = $(this).data('boardRowId');
+            var questionList = $('#questionList');
+        
+            $.ajax({
+                url: '/questions/store',
+                method: 'POST',
+                contentType: 'application/json',
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                data: JSON.stringify({
+                    content: questionInput.val(),
+                    board_row_id: boardRowId
+                }),
+                success: function(data) {
+                    // リセット
+                    questionList.html('');
+                    questionInput.val('');
                     
-                    var radioDiv = $('<div></div>').css('float', 'right');
-                    
-                    // ラジオボタン
-                    var yesRadio = $('<input>').attr({type: 'radio', name: 'choice' + question.id, value: 'yes', checked: question.answer !== null ? question.answer : false});
-                    var yesLabel = $('<label></label>').text('Yes');
-                    
-                    var noRadio = $('<input>').attr({type: 'radio', name: 'choice' + question.id, value: 'no', checked: question.answer !== null ? !question.answer : false});
-                    var noLabel = $('<label></label>').text('No');
-                    
-                    // イベント登録
-                    yesRadio.change(function() {
-                        saveChoice(question.id, this.value);
+                    // questionの数だけ要素作る
+                    $.each(data.success, function(i, question) {
+                        var li = $('<li></li>').text(question.content).addClass('list-group-item').attr('data-question-id', question.id);
+                        
+                        var radioDiv = $('<div></div>').css('float', 'right');
+                        
+                        // ラジオボタン
+                        var yesRadio = $('<input>').attr({type: 'radio', name: 'choice' + question.id, value: 'yes', checked: question.answer !== null ? question.answer : false});
+                        var yesLabel = $('<label></label>').text('Yes');
+                        
+                        var noRadio = $('<input>').attr({type: 'radio', name: 'choice' + question.id, value: 'no', checked: question.answer !== null ? !question.answer : false});
+                        var noLabel = $('<label></label>').text('No');
+                        
+                        // イベント登録
+                        yesRadio.change(function() {
+                            saveChoice(question.id, this.value);
+                        });
+                        noRadio.change(function() {
+                            saveChoice(question.id, this.value);
+                        });
+                        
+                        radioDiv.append(yesRadio, yesLabel, noRadio, noLabel);
+                        
+                        var deleteButton = $('<button></button>').text('削除').attr('type', 'button').click(function() {
+                            deleteQuestion(question.id);
+                        });
+                        
+                        li.append(deleteButton, radioDiv);
+                        
+                        questionList.append(li);
                     });
-                    noRadio.change(function() {
-                        saveChoice(question.id, this.value);
-                    });
-                    
-                    radioDiv.append(yesRadio, yesLabel, noRadio, noLabel);
-                    
-                    var deleteButton = $('<button></button>').text('削除').attr('type', 'button').click(function() {
-                        deleteQuestion(question.id);
-                    });
-                    
-                    li.append(deleteButton, radioDiv);
-                    
-                    questionList.append(li);
-                });
-            },
-            error: function(jqXHR, textStatus, errorThrown) {
-                console.error('There has been a problem with your fetch operation:', errorThrown);
-            }
+                },
+                error: function(jqXHR, textStatus, errorThrown) {
+                    console.error('There has been a problem with your fetch operation:', errorThrown);
+                }
+            });
         });
     });
     
@@ -406,8 +434,8 @@
             success: function(data) {
                 var targetElement1 = $('input[data-tag-id="' + tagId + '"]').closest('.tagList').remove();
                 var targetElement2 = $('input[data-tag-id="' + tagId + '"]').closest('.tagField').remove();
-                // console.log('targetElement1:', targetElement1);
-                // console.log('targetElement2:', targetElement2);
+                console.log('targetElement1:', targetElement1);
+                console.log('targetElement2:', targetElement2);
             },
             error: function(error) {
                 console.log('An error occurred while processing your request.');

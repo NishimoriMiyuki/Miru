@@ -53,7 +53,9 @@ class BoardController extends Controller
         $statuses = Status::all();
         
         $boards = auth()->user()->boards;
-        return view('boards.show', compact('board', 'boards', 'difficultyLevels', 'statuses'));
+        $groupedRows = $board->boardRows->groupBy('status_id');
+        
+        return view('boards.show', compact('board', 'boards', 'difficultyLevels', 'statuses', 'groupedRows'));
     }
 
     /**
