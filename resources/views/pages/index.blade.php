@@ -1,10 +1,10 @@
 <x-app-layout>
     <!-- フラッシュメッセージ -->
     @if (session('message'))
-        <div class="alert alert-success relative">
+        <div class="bg-green-500 text-white relative">
             {{ session('message') }}
         <!-- フラッシュメッセージを消すボタン -->
-        <button type="button" class="absolute top-0 right-0 px-4 py-3" onclick="this.parentElement.remove();">
+        <button type="button" class="absolute top-0 right-0 px-4 py-3 text-white" onclick="this.parentElement.remove();">
             ×
         </button>
         </div>

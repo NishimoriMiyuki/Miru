@@ -3,22 +3,25 @@
 namespace App\Http\Controllers;
 
 use App\Models\BoardRow;
+use App\Models\DifficultyLevel;
+use App\Models\Status;
 use Illuminate\Http\Request;
 
 class BoardRowController extends Controller
 {
-    public function store(Request $request)
+    public function create($board)
     {
-        $boardId = $request->input('board_id');
+        $board = auth()->user()->boards()->findOrFail($board);
+        $boards = auth()->user()->boards;
+        $tags = $board->tags;
+        $difficultyLevels = DifficultyLevel::all();
+        $statuses = Status::all();
         
-        $boardRow = new BoardRow;
-        $boardRow->board_id = $boardId;
-        $boardRow->title = $request->title;
-        $boardRow->quiz_content = $request->quiz_content;
-        $boardRow->quiz_answer = $request->quiz_answer;
+        $boardRow = new BoardRow();
+        $boardRow->board_id = $board->id;
         $boardRow->save();
         
-        return redirect()->route('boards.show', $boardId);
+        return view('board_rows.create', compact('boards', 'difficultyLevels', 'statuses', 'board', 'boardRow', 'tags'));
     }
     
     public function update(Request $request, BoardRow $boardRow)
@@ -28,7 +31,7 @@ class BoardRowController extends Controller
             abort(403);
         }
         
-        $data = $request->only(['title', 'quiz_content', 'quiz_answer']);
+        $data = $request->only(['title', 'quiz_content', 'quiz_answer', 'difficulty_level_id', 'status_id']);
         $boardRow->update($data);
         $boardId = $boardRow->board->id;
         

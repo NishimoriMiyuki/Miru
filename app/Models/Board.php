@@ -24,4 +24,9 @@ class Board extends Model
     {
         return $this->hasMany(BoardRow::class);
     }
+    
+    public function tags()
+    {
+        return $this->hasMany(Tag::class);
+    }
 }

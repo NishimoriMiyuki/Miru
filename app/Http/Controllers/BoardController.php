@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Board;
+use App\Models\DifficultyLevel;
+use App\Models\Status;
 use Illuminate\Http\Request;
 
 class BoardController extends Controller
@@ -34,7 +36,7 @@ class BoardController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        
     }
 
     /**
@@ -47,8 +49,11 @@ class BoardController extends Controller
             abort(403);
         }
         
+        $difficultyLevels = DifficultyLevel::all();
+        $statuses = Status::all();
+        
         $boards = auth()->user()->boards;
-        return view('boards.show', compact('board', 'boards'));
+        return view('boards.show', compact('board', 'boards', 'difficultyLevels', 'statuses'));
     }
 
     /**
