@@ -19,6 +19,8 @@ class BoardRowController extends Controller
         
         $boardRow = new BoardRow();
         $boardRow->board_id = $board->id;
+        $boardRow->title = "無題";
+        $boardRow->status_id = 2;
         $boardRow->save();
         
         return view('board_rows.create', compact('boards', 'difficultyLevels', 'statuses', 'board', 'boardRow', 'tags'));

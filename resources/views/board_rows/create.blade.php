@@ -16,7 +16,7 @@
                 <div class="body">
                     <div class="mb-3">
                         <label for="title" class="block text-sm font-medium text-gray-700">タイトル:</label>
-                        <input type="text" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" id="title" name="title">
+                        <input type="text" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" id="title" name="title" value="無題">
                     </div>
                     <!-- 問題 -->
                     <div class="mb-3">
