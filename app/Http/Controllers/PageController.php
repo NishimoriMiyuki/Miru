@@ -3,130 +3,103 @@
 namespace App\Http\Controllers;
 
 use App\Models\Page;
+use App\Http\Requests\PageRequest;
 use Illuminate\Http\Request;
 
 class PageController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
         $pages = auth()->user()->pages;
         return view('pages.index', compact('pages'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
-        $page = new Page;
-        $page->title = '無題';
-        $page->user_id = auth()->id();
-        $page->save();
-        
-        return redirect()->route('pages.show', $page);
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(Page $page)
-    {
-        // ページの所有者が現在のユーザーでなければ、403エラーを返す
-        if ($page->user_id !== auth()->id()) {
-            abort(403);
-        }
-        
         $pages = auth()->user()->pages;
-        return view('pages.show', ['select_page' => $page, 'pages' => $pages]);
+        return view('pages.create', compact('pages'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
+    public function store(PageRequest $request)
+    {
+        $page = Page::create([
+            'title' => $request->title,
+            'content' => $request->content,
+            'user_id' => auth()->id(),
+        ]);
+        
+        session()->flash('message', '新しいページが作成されました');
+        
+        return redirect()->route('pages.edit', compact('page'));
+    }
+    
+    public function show($page)
+    {
+        $page = Page::withTrashed()->findOrFail($page);
+        
+        $this->authorize('view', $page);
+        
+        $trashedPages = auth()->user()->pages()->onlyTrashed()->get();
+        
+        return view('pages.show', compact('page', 'trashedPages'));
+    }
+
     public function edit(Page $page)
     {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Page $page)
-    {
-        // ページの所有者が現在のユーザーでなければ、403エラーを返す
-        if ($page->user_id !== auth()->id()) {
-            abort(403);
-        }
+        $this->authorize('update', $page);
         
-        $data = $request->only(['title', 'content']);
-        $page->update($data);
-        return redirect()->route('pages.show', $page);
+        $pages = auth()->user()->pages;
+        return view('pages.edit', compact('pages', 'page'));
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
+    public function update(PageRequest $request, Page $page)
+    {
+        $this->authorize('update', $page);
+        
+        $page->update($request->validated());
+        
+        session()->flash('message', 'ページが更新されました');
+        return redirect()->route('pages.edit', compact('page'));
+    }
+    
     public function destroy(Page $page)
     {
-        // ページの所有者が現在のユーザーでなければ、403エラーを返す
-        if ($page->user_id !== auth()->id()) {
-            abort(403);
-        }
+        $this->authorize('delete', $page);
         
-        // 論理削除
         $page->delete();
         
-        session()->flash('message', '削除しました');
-        return redirect()->route('pages.index');
+        session()->flash('message', 'ページを削除しました');
+        return redirect(route('pages.index'));
+    }
+    
+    public function forceDelete($page)
+    {
+        $page = Page::withTrashed()->findOrFail($page);
+        
+        $this->authorize('delete', $page);
+        
+        $page->forceDelete();
+        
+        session()->flash('message', 'ページを完全に削除しました');
+        return redirect(route('pages.trashed'));
+    }
+    
+    public function restore($page)
+    {
+        $page = Page::withTrashed()->findOrFail($page);
+        
+        $this->authorize('delete', $page);
+        
+        $page->restore();
+        
+        session()->flash('message', 'ページを復元しました');
+        return redirect(route('pages.trashed'));
     }
     
     public function trashed()
     {
-        $pages = auth()->user()->pages;
-        
-        $trashedPages = auth()->user()->pages()->onlyTrashed()->paginate(5);
+        $trashedPages = auth()->user()->pages()->onlyTrashed()->get();
             
-        return view('pages.trashed', compact('trashedPages', 'pages'));
-    }
-    
-    public function deleteAll()
-    {
-        // すべての論理削除されたページを永久に削除
-        auth()->user()->pages()->onlyTrashed()->forceDelete();
-        
-        session()->flash('message', 'ゴミ箱の中身を全て削除しました');
-        return redirect()->route('pages.index');
-    }
-    
-    public function deleteSelected(Request $request)
-    {
-        $selectedPagesId = $request->input('selectedPages');
-        
-        // idが一致するページを永久に削除
-        auth()->user()->pages()->onlyTrashed()->whereIn('id', $selectedPagesId)->forceDelete();
-        
-        session()->flash('message', '選択されたページを削除しました。');
-        return redirect()->route('pages.trashed');
-    }
-    
-    public function restoreSelected(Request $request)
-    {
-        $selectedPagesId = $request->input('selectedPages');
-
-        auth()->user()->pages()->whereIn('id', $selectedPagesId)->restore();
-
-        session()->flash('message', '選択されたページを復元しました。');
-        return redirect()->route('pages.index');
+        return view('pages.trashed', compact('trashedPages'));
     }
 }
