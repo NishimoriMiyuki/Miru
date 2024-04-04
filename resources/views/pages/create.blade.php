@@ -10,23 +10,27 @@
         </div>
     @endif
     
+    <div class="flex">
         <!-- サイドバー -->
         <div class="w-1/4 h-screen bg-gray-200 overflow-auto">
             
             <!-- ボタン -->
             <div class="p-4 flex flex-col space-y-2">
-                <a href="{{ route('pages.index') }}" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
-                    ゴミ箱を閉じる
+                <a href="{{ route('pages.create') }}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                    Page作成
+                </a>
+                <a href="{{ route('pages.trashed') }}" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
+                    ゴミ箱を開く
                 </a>
             </div>
             
             <!-- 各ページのリンク -->
             <ul class="space-y-2 p-4">
-                @foreach ($trashedPages as $trashedPage)
+                @foreach ($pages as $linkPage)
                     <li>
                         <div class="flex justify-between">
-                            <a href="{{ route('pages.show', $trashedPage) }}" class="text-blue-500 hover:underline">
-                                {{ \Illuminate\Support\Str::limit($trashedPage->title, 20) }}
+                            <a href="{{ route('pages.edit', $linkPage) }}" class="text-blue-500 hover:underline">
+                                {{ \Illuminate\Support\Str::limit($linkPage->title, 20) }}
                             </a>
                             <!-- ドロップダウンメニュー -->
                             <x-dropdown align="right" width="48">
@@ -39,22 +43,13 @@
                                 </x-slot>
                                 <x-slot name="content">
                                     <!-- 削除ボタン -->
-                                    <form method="POST" action="{{ route('pages.force_delete', $trashedPage) }}">
+                                    <form method="POST" action="{{ route('pages.destroy', $linkPage) }}">
                                         @csrf
                                         @method('DELETE')
-                                        <x-dropdown-link :href="route('pages.force_delete', $trashedPage)"
-                                                onclick="event.preventDefault();
-                                                            if(confirm('完全に削除してもよろしいですか？')) this.closest('form').submit();">
-                                            {{ __('削除') }}
-                                        </x-dropdown-link>
-                                    </form>
-                                    <!-- 復元ボタン -->
-                                    <form method="POST" action="{{ route('pages.restore', $trashedPage) }}">
-                                        @csrf
-                                        <x-dropdown-link :href="route('pages.restore', $trashedPage)"
+                                        <x-dropdown-link :href="route('pages.destroy', $linkPage)"
                                                 onclick="event.preventDefault();
                                                             this.closest('form').submit();">
-                                            {{ __('復元') }}
+                                            {{ __('削除') }}
                                         </x-dropdown-link>
                                     </form>
                                 </x-slot>
@@ -64,4 +59,27 @@
                 @endforeach
             </ul>
         </div>
+        
+        <!-- 新しいページ作成フォーム -->
+        <div class="w-3/4 h-screen bg-white overflow-auto p-4">
+            <form action="{{ route('pages.store') }}" method="POST">
+                @csrf
+                <div>
+                    <input type="text" id="title" name="title" placeholder="タイトルを入力して下さい" value="{{ old('title') }}" class="shadow appearance-none border border-transparent w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline text-3xl font-semibold">
+                    <x-input-error :messages="$errors->get('title')" class="mt-2" />
+                </div>
+                <div>
+                    <textarea id="content" name="content" rows="50" placeholder="内容を入力して下さい" class="shadow appearance-none border border-transparent w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">{{ old('content') }}</textarea>
+                    <x-input-error :messages="$errors->get('content')" class="mt-2" />
+                </div>
+                <div>
+                    <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                        作成
+                    </button>
+                </div>
+            </form>
+        </div>
+        
+    </div>
+    
 </x-app-layout>
