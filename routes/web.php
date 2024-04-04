@@ -24,20 +24,19 @@ Route::middleware('auth')->group(function () {
 # Pagesルート
 Route::delete('pages/{page}/force_delete', [PageController::class, 'forceDelete'])->name('pages.force_delete')->middleware(['auth', 'verified']);
 Route::get('/pages/trashed', [PageController::class, 'trashed'])->name('pages.trashed')->middleware(['auth', 'verified']);
-Route::post('pages/{page}/restore', [PageController::class, 'restore'])->name('pages.restore')->middleware(['auth', 'verified']);
+Route::post('/pages/{page}/restore', [PageController::class, 'restore'])->name('pages.restore')->middleware(['auth', 'verified']);
 
 Route::resource('pages', PageController::class)
     ->only(['index', 'create', 'store', 'update', 'destroy', 'edit', 'show'])
     ->middleware(['auth', 'verified']);
     
 # boardsルート
-Route::patch('/boards/restore_selected', [BoardController::class, 'restoreSelected'])->name('boards.restore_selected')->middleware(['auth', 'verified']);
+Route::delete('boards/{board}/force_delete', [BoardController::class, 'forceDelete'])->name('boards.force_delete')->middleware(['auth', 'verified']);
 Route::get('/boards/trashed', [BoardController::class, 'trashed'])->name('boards.trashed')->middleware(['auth', 'verified']);
-Route::delete('/boards/delete_all', [BoardController::class, 'deleteAll'])->name('boards.delete_all')->middleware(['auth', 'verified']);
-Route::delete('/boards/delete_selected', [BoardController::class, 'deleteSelected'])->name('boards.delete_selected')->middleware(['auth', 'verified']);
+Route::post('/boards/{board}/restore', [BoardController::class, 'restore'])->name('boards.restore')->middleware(['auth', 'verified']);
 
 Route::resource('boards', BoardController::class)
-    ->only(['index', 'create', 'store', 'update', 'destroy', 'show'])
+    ->only(['index', 'create', 'store', 'update', 'destroy', 'show', 'edit'])
     ->middleware(['auth', 'verified']);
 
 # board_rowsルート

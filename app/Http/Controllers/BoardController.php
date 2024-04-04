@@ -3,132 +3,106 @@
 namespace App\Http\Controllers;
 
 use App\Models\Board;
-use App\Models\DifficultyLevel;
 use App\Models\Status;
+use App\Http\Requests\BoardRequest;
 use Illuminate\Http\Request;
 
 class BoardController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
         $boards = auth()->user()->boards;
         return view('boards.index', compact('boards'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
-        $board = new Board;
-        $board->name = '無題';
-        $board->user_id = auth()->id();
-        $board->save();
-        
-        return redirect()->route('boards.show', $board);
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(Board $board)
-    {
-        if ($board->user_id !== auth()->id()) 
-        {
-            abort(403);
-        }
-        
-        $difficultyLevels = DifficultyLevel::all();
-        $statuses = Status::all();
-        
         $boards = auth()->user()->boards;
+        return view('boards.create', compact('boards'));
+    }
+
+    public function store(BoardRequest $request)
+    {
+        $board = Board::create([
+            'name' => $request->name,
+            'user_id' => auth()->id(),
+        ]);
+        
+        session()->flash('message', '新しいボードが作成されました');
+        
+        return redirect()->route('boards.edit', compact('board'));
+    }
+
+    public function show($board)
+    {
+        $board = Board::withTrashed()->findOrFail($board);
+        
+        $this->authorize('view', $board);
+        
+        $statuses = Status::all();
         $groupedRows = $board->boardRows->groupBy('status_id');
         
-        return view('boards.show', compact('board', 'boards', 'difficultyLevels', 'statuses', 'groupedRows'));
+        $trashedBoards = auth()->user()->boards()->onlyTrashed()->get();
+        
+        return view('boards.show', compact('trashedBoards', 'board', 'statuses', 'groupedRows'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
     public function edit(Board $board)
     {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Board $board)
-    {
-        if ($board->user_id !== auth()->id()) 
-        {
-            abort(403);
-        }
+        $this->authorize('update', $board);
         
-        $data = $request->only(['name']);
-        $board->update($data);
-        return redirect()->route('boards.show', $board);
+        $statuses = Status::all();
+        $groupedRows = $board->boardRows->groupBy('status_id');
+        
+        $boards = auth()->user()->boards;
+        return view('boards.edit', compact('boards', 'board', 'statuses', 'groupedRows'));
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
+    public function update(BoardRequest $request, Board $board)
+    {
+        $this->authorize('update', $board);
+        
+        $board->update($request->validated());
+        
+        return redirect()->route('boards.edit', $board);
+    }
+
     public function destroy(Board $board)
     {
-        if ($board->user_id !== auth()->id()) 
-        {
-            abort(403);
-        }
+        $this->authorize('delete', $board);
         
         $board->delete();
+        
         session()->flash('message', '削除しました');
-        return redirect()->route('boards.index');
+        return redirect(route('boards.index'));
+    }
+    
+    public function forceDelete($board)
+    {
+        $board = Board::withTrashed()->findOrFail($board);
+        
+        $this->authorize('delete', $board);
+        
+        $board->forceDelete();
+        
+        return redirect(route('boards.trashed'));
+    }
+    
+    public function restore($board)
+    {
+        $board = Board::withTrashed()->findOrFail($board);
+        
+        $this->authorize('delete', $board);
+        
+        $board->restore();
+        
+        return redirect(route('boards.trashed'));
     }
     
     public function trashed()
     {
-        $boards = auth()->user()->boards;
-        
-        $trashedBoards = auth()->user()->boards()->onlyTrashed()->paginate(5);
+        $trashedBoards = auth()->user()->boards()->onlyTrashed()->get();
             
-        return view('boards.trashed', compact('trashedBoards', 'boards'));
-    }
-    
-    public function deleteAll()
-    {
-        auth()->user()->boards()->onlyTrashed()->forceDelete();
-        
-        session()->flash('message', 'ゴミ箱の中身を全て削除しました');
-        return redirect()->route('boards.index');
-    }
-    
-    public function deleteSelected(Request $request)
-    {
-        $selectedBoardsId = $request->input('selectedBoards');
-        auth()->user()->boards()->onlyTrashed()->whereIn('id', $selectedBoardsId)->forceDelete();
-        
-        session()->flash('message', '選択されたボードを削除しました。');
-        return redirect()->route('boards.trashed');
-    }
-    
-    public function restoreSelected(Request $request)
-    {
-        $selectedBoardsId = $request->input('selectedBoards');
-
-        auth()->user()->boards()->whereIn('id', $selectedBoardsId)->restore();
-
-        session()->flash('message', '選択されたボードを復元しました。');
-        return redirect()->route('boards.index');
+        return view('boards.trashed', compact('trashedBoards'));
     }
 }

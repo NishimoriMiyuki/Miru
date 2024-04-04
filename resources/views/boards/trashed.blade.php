@@ -1,62 +1,67 @@
 <x-app-layout>
-    <div class="flex">
-        <!-- ページ一覧部分 -->
-        <x-board-list :boards="$boards" />
-        
-        <!-- ゴミ箱の中身一覧 -->
-        <div class="py-12">
-            <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-                <!-- 一括削除ボタン -->
-                <form method="POST" action="{{ route('boards.delete_all') }}">
-                    @csrf
-                    @method('DELETE')
-                    <button type="submit" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
-                        {{ __('一括削除') }}
-                    </button>
-                </form>
-                <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                    <!-- 各ページ -->
-                    <div class="p-6 bg-white border-b border-gray-200">
-                        @if ($trashedBoards->count())
-                            <!-- ページ操作のためのフォーム -->
-                            <form id="boardForm" method="POST" action="">
-                                @csrf
-                                <ul>
-                                    @foreach ($trashedBoards as $trashedBoard)
-                                        <li class="mb-4">
-                                            <!-- チェックボックス -->
-                                            <input type="checkbox" name="selectedBoards[]" value="{{ $trashedBoard->id }}">
-                                            <h2 class="font-bold text-xl">{{ $trashedBoard->name }}</h2>
-                                        </li>
-                                    @endforeach
-                                </ul>
-                                <!-- ページ操作のボタン -->
-                                <button type="submit" class="mt-4" onclick="submitForm('DELETE', '{{ route('boards.delete_selected') }}')">{{ __('選択したボードを削除') }}</button>
-                                <button type="submit" class="mt-4" onclick="submitForm('PATCH', '{{ route('boards.restore_selected') }}')">{{ __('選択したボードを復元') }}</button>
-                            </form>
-                        @else
-                            <p>{{ __('削除されたボードはありません。') }}</p>
-                        @endif
-                    </div>
-                </div>
-                <!-- ページネーション -->
-                {{ $trashedBoards->links() }}
-            </div>
+    <!-- フラッシュメッセージ -->
+    @if (session('message'))
+        <div class="bg-green-500 text-white relative">
+            {{ session('message') }}
+        <!-- フラッシュメッセージを消すボタン -->
+        <button type="button" class="absolute top-0 right-0 px-4 py-3 text-white" onclick="this.parentElement.remove();">
+            ×
+        </button>
         </div>
-    </div>
+    @endif
     
-<script>
-    // フォームの送信方法と送信先を設定するメソッド
-    function submitForm(method, action) {
-        var form = document.getElementById('boardForm');
-        form.method = 'POST';
-        form.action = action;
-        var hiddenInput = document.createElement('input');
-        hiddenInput.type = 'hidden';
-        hiddenInput.name = '_method';
-        hiddenInput.value = method;
-        form.appendChild(hiddenInput);
-        form.submit();
-    }
-</script>
+    <!-- サイドバー -->
+    <div class="w-1/4 h-screen bg-gray-200 overflow-auto">
+        
+        <!-- ボタン -->
+        <div class="p-4 flex flex-col space-y-2">
+            <a href="{{ route('boards.index') }}" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
+                ゴミ箱を閉じる
+            </a>
+        </div>
+        
+        <!-- 各ページのリンク -->
+        <ul class="space-y-2 p-4">
+            @foreach ($trashedBoards as $trashedBoard)
+                <li>
+                    <div class="flex justify-between">
+                        <a href="{{ route('boards.show', $trashedBoard) }}" class="text-blue-500 hover:underline">
+                            {{ \Illuminate\Support\Str::limit($trashedBoard->name, 20) }}
+                        </a>
+                        <!-- ドロップダウンメニュー -->
+                        <x-dropdown align="right" width="48">
+                            <x-slot name="trigger">
+                                <button class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 hover:text-gray-700 focus:outline-none transition ease-in-out duration-150">
+                                    <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                                    </svg>
+                                </button>
+                            </x-slot>
+                            <x-slot name="content">
+                                <!-- 削除ボタン -->
+                                <form method="POST" action="{{ route('boards.force_delete', $trashedBoard) }}">
+                                    @csrf
+                                    @method('DELETE')
+                                    <x-dropdown-link :href="route('boards.force_delete', $trashedBoard)"
+                                            onclick="event.preventDefault();
+                                                        this.closest('form').submit();">
+                                        {{ __('削除') }}
+                                    </x-dropdown-link>
+                                </form>
+                                <!-- 復元ボタン -->
+                                <form method="POST" action="{{ route('boards.restore', $trashedBoard) }}">
+                                    @csrf
+                                    <x-dropdown-link :href="route('boards.restore', $trashedBoard)"
+                                            onclick="event.preventDefault();
+                                                        this.closest('form').submit();">
+                                        {{ __('復元') }}
+                                    </x-dropdown-link>
+                                </form>
+                            </x-slot>
+                        </x-dropdown>
+                    </div>
+                </li>
+            @endforeach
+        </ul>
+    </div>
 </x-app-layout>

@@ -11,23 +11,27 @@
     @endif
     
     <div class="flex">
-            <!-- サイドバー -->
+    
+        <!-- サイドバー -->
         <div class="w-1/4 h-screen bg-gray-200 overflow-auto">
             
             <!-- ボタン -->
             <div class="p-4 flex flex-col space-y-2">
-                <a href="{{ route('boards.index') }}" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
-                    ゴミ箱を閉じる
+                <a href="{{ route('boards.create') }}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                    新規作成
+                </a>
+                <a href="{{ route('boards.trashed') }}" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
+                    ゴミ箱を開く
                 </a>
             </div>
             
             <!-- 各ページのリンク -->
             <ul class="space-y-2 p-4">
-                @foreach ($trashedBoards as $trashedBoard)
+                @foreach ($boards as $linkboard)
                     <li>
                         <div class="flex justify-between">
-                            <a href="{{ route('boards.show', $trashedBoard) }}" class="text-blue-500 hover:underline">
-                                {{ \Illuminate\Support\Str::limit($trashedBoard->name, 20) }}
+                            <a href="{{ route('boards.edit', $linkboard) }}" class="text-blue-500 hover:underline">
+                                {{ \Illuminate\Support\Str::limit($linkboard->name, 20) }}
                             </a>
                             <!-- ドロップダウンメニュー -->
                             <x-dropdown align="right" width="48">
@@ -40,22 +44,13 @@
                                 </x-slot>
                                 <x-slot name="content">
                                     <!-- 削除ボタン -->
-                                    <form method="POST" action="{{ route('boards.force_delete', $trashedBoard) }}">
+                                    <form method="POST" action="{{ route('boards.destroy', $linkboard) }}">
                                         @csrf
                                         @method('DELETE')
-                                        <x-dropdown-link :href="route('boards.force_delete', $trashedBoard)"
+                                        <x-dropdown-link :href="route('boards.destroy', $linkboard)"
                                                 onclick="event.preventDefault();
                                                             this.closest('form').submit();">
                                             {{ __('削除') }}
-                                        </x-dropdown-link>
-                                    </form>
-                                    <!-- 復元ボタン -->
-                                    <form method="POST" action="{{ route('boards.restore', $trashedBoard) }}">
-                                        @csrf
-                                        <x-dropdown-link :href="route('boards.restore', $trashedBoard)"
-                                                onclick="event.preventDefault();
-                                                            this.closest('form').submit();">
-                                            {{ __('復元') }}
                                         </x-dropdown-link>
                                     </form>
                                 </x-slot>
@@ -73,7 +68,10 @@
                 <form action="{{ route('boards.update', $board) }}" method="POST">
                     @csrf
                     @method('PUT')
-                    <input type="text" name="name" class="w-full px-3 py-2 border border-gray-300 rounded" placeholder="ボード名を入力" value="{{ $board->name }}" readOnly>
+                    <input type="text" name="name" class="w-full px-3 py-2 border border-gray-300 rounded" placeholder="ボード名を入力" value="{{ $board->name }}">
+                    <button type="submit" class="mt-2 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                        変更
+                    </button>
                 </form>
             </div>
             
