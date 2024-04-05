@@ -5,17 +5,15 @@ namespace App\Http\Controllers;
 use App\Models\BoardRow;
 use App\Models\DifficultyLevel;
 use App\Models\Status;
+use App\Models\Board;
+use App\Http\Requests\BoardRowRequest;
 use Illuminate\Http\Request;
 
 class BoardRowController extends Controller
 {
-    public function create($board)
+    public function store(Board $board)
     {
-        $board = auth()->user()->boards()->findOrFail($board);
-        $boards = auth()->user()->boards;
-        $tags = $board->tags;
-        $difficultyLevels = DifficultyLevel::all();
-        $statuses = Status::all();
+        $this->authorize('create', $board);
         
         $boardRow = new BoardRow();
         $boardRow->board_id = $board->id;
@@ -23,43 +21,33 @@ class BoardRowController extends Controller
         $boardRow->status_id = 2;
         $boardRow->save();
         
-        return view('board_rows.create', compact('boards', 'difficultyLevels', 'statuses', 'board', 'boardRow', 'tags'));
+        return redirect()->route('boards.edit', $board);
     }
     
-    public function update(Request $request, BoardRow $boardRow)
+    public function update(BoardRowRequest $request, BoardRow $boardRow)
     {
-        if ($boardRow->board->user_id !== auth()->id()) 
-        {
-            abort(403);
-        }
+        $this->authorize('update', $boardRow);
         
-        $data = $request->only(['title', 'quiz_content', 'quiz_answer', 'difficulty_level_id', 'status_id']);
-        $boardRow->update($data);
+        $boardRow->update($request->validated());
         $boardId = $boardRow->board->id;
         
-        return redirect()->route('boards.show', $boardId);
+        return redirect()->route('boards.edit', $boardId);
     }
     
     public function destroy(BoardRow $boardRow)
     {
-        if ($boardRow->board->user_id !== auth()->id()) 
-        {
-            abort(403);
-        }
+        $this->authorize('delete', $boardRow);
         
         $boardRow->delete();
         $boardId = $boardRow->board->id;
         
         session()->flash('message', '削除しました');
-        return redirect()->route('boards.show', $boardId);
+        return redirect()->route('boards.edit', $boardId);
     }
     
     public function edit(BoardRow $boardRow)
     {
-        if ($boardRow->board->user_id !== auth()->id()) 
-        {
-            abort(403);
-        }
+        $this->authorize('update', $boardRow);
         
         $boards = auth()->user()->boards;
         $difficultyLevels = DifficultyLevel::all();

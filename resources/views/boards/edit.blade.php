@@ -75,6 +75,13 @@
                 </form>
             </div>
             
+            <!-- BoardRow作成ボタン -->
+            <div class="p-4">
+                <a href="{{ route('board_rows.store', $board) }}" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
+                    問題作成
+                </a>
+            </div>
+            
             <!-- boardRow表示用 -->
             <div class="mt-4 flex flex-wrap">
                 @foreach ($statuses as $status)

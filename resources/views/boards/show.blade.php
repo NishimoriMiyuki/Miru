@@ -86,16 +86,9 @@
                             @if (isset($groupedRows[$status->id]))
                                 @foreach ($groupedRows[$status->id] as $boardRow)
                                     <div class="mt-4 shadow-md flex">
-                                        <a href="{{ route('board_rows.edit', $boardRow) }}">
                                             <h3 class="text-lg">{{ $boardRow->title }}</h3>
                                             <p>{{ $boardRow->quiz_content }}</p>
                                         </a>
-                                        <!-- 削除ボタン -->
-                                        <form action="{{ route('board_rows.destroy', $boardRow) }}" method="POST">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit">削除</button>
-                                        </form>
                                     </div>
                                 @endforeach
                             @endif

@@ -40,20 +40,21 @@ Route::resource('boards', BoardController::class)
     ->middleware(['auth', 'verified']);
 
 # board_rowsルート
-Route::get('/board_rows/create/{board}', [BoardRowController::class, 'create'])->name('board_rows.create')->middleware(['auth', 'verified']);
+Route::get('/board_rows/{board}/store', [BoardRowController::class, 'store'])->name('board_rows.store')->middleware(['auth', 'verified']);
 
 Route::resource('board_rows', BoardRowController::class)
-    ->only(['store', 'update', 'destroy', 'edit'])
+    ->only(['update', 'destroy', 'edit'])
     ->middleware(['auth', 'verified']);
     
 # questionsルート
-Route::post('/questions/store', [QuestionController::class, 'store'])->name('questions.store')->middleware(['auth', 'verified']);
-Route::put('/questions/update', [QuestionController::class, 'update'])->name('questions.update')->middleware(['auth', 'verified']);
-Route::delete('/questions/destroy', [QuestionController::class, 'destroy'])->name('questions.update')->middleware(['auth', 'verified']);
+Route::resource('questions', QuestionController::class)
+    ->only(['store', 'update', 'destroy'])
+    ->middleware(['auth', 'verified']);
 
 # commentsルート
-Route::post('/comments/store', [CommentController::class, 'store'])->name('comments.store')->middleware(['auth', 'verified']);
-Route::delete('/comments/destroy', [CommentController::class, 'destroy'])->name('comments.update')->middleware(['auth', 'verified']);
+Route::resource('comments', CommentController::class)
+    ->only(['store', 'destroy'])
+    ->middleware(['auth', 'verified']);
 
 #tagsルート
 Route::post('/tags/store', [TagController::class, 'store'])->name('tags.store')->middleware(['auth', 'verified']);
