@@ -3,20 +3,26 @@
 namespace App\Http\Controllers;
 
 use App\Models\Question;
+use App\Models\BoardRow;
 use Illuminate\Http\Request;
 
 class QuestionController extends Controller
 {
     public function store(Request $request)
     {
-        $content = $request->input('content');
-        $boardRowId = $request->input('board_row_id');
+        $validatedData = $request->validate([
+            'content' => 'required|max:255',
+            'board_row_id' => 'required|exists:board_rows,id',
+        ]);
+        
+        $boardRow = BoardRow::findOrFail($validatedData['board_row_id']);
+        
+        $this->authorize('view', $boardRow);
 
-        $question = new Question;
-        $question->content = $content;
-        $question->board_row_id = $boardRowId;
-
-        $question->save();
+        $question = Question::create([
+            'content' => $validatedData['content'],
+            'board_row_id' => $validatedData['board_row_id'],
+        ]);
     
         $boardRow = $question->boardRow;
         $questions = $boardRow->questions;
@@ -26,31 +32,31 @@ class QuestionController extends Controller
     
     public function update(Request $request)
     {
-        $questionId = $request->input('question_id');
-        $choice = $request->input('choice');
+        $validatedData = $request->validate([
+            'question_id' => 'required|exists:questions,id',
+            'choice' => 'required|in:yes,no',
+        ]);
+    
+        $questionId = $validatedData['question_id'];
+        $choice = $validatedData['choice'];
+    
+        $question = Question::findOrFail($questionId);
         
-        $question = Question::find($questionId);
-        if ($question) 
-        {
-            $question->answer = ($choice === 'yes');
-            
-            $question->save();
-            return response()->json(['success' => 'Choice updated successfully.']);
-        }
-        else
-        {
-            return response()->json(['error' => 'Question not found.'], 404);
-        }
+        $this->authorize('update', $question);
+    
+        $question->answer = ($choice === 'yes');
+        $question->save();
+        
+        return response()->json(['success' => 'Choice updated successfully.']);
     }
     
     public function destroy(Request $request)
     {
         $questionId = $request->input('question_id');
         
-        $question = Question::find($questionId);
-        if ($question === null) {
-            return response()->json(['error' => 'Question not found'], 404);
-        }
+        $question = Question::findOrFail($questionId);
+        
+        $this->authorize('delete', $question);
         
         $question->delete();
         

@@ -2,11 +2,11 @@
 
 namespace App\Policies;
 
-use App\Models\Board;
+use App\Models\Question;
 use App\Models\User;
 use Illuminate\Auth\Access\Response;
 
-class BoardPolicy
+class QuestionPolicy
 {
     /**
      * Determine whether the user can view any models.
@@ -19,39 +19,39 @@ class BoardPolicy
     /**
      * Determine whether the user can view the model.
      */
-    public function view(User $user, Board $board): bool
+    public function view(User $user, Question $question): bool
     {
-        return $user->id === $board->user_id;
+        //
     }
 
     /**
      * Determine whether the user can create models.
      */
-    public function create(User $user, Board $board): bool
+    public function create(User $user): bool
     {
-        return $user->id === $board->user_id;
+        //
     }
 
     /**
      * Determine whether the user can update the model.
      */
-    public function update(User $user, Board $board): bool
+    public function update(User $user, Question $question): bool
     {
-        return $user->id === $board->user_id;
+        return $user->id === $question->boardRow->board->user_id;
     }
 
     /**
      * Determine whether the user can delete the model.
      */
-    public function delete(User $user, Board $board): bool
+    public function delete(User $user, Question $question): bool
     {
-        return $user->id === $board->user_id;
+        return $user->id === $question->boardRow->board->user_id;
     }
 
     /**
      * Determine whether the user can restore the model.
      */
-    public function restore(User $user, Board $board): bool
+    public function restore(User $user, Question $question): bool
     {
         //
     }
@@ -59,7 +59,7 @@ class BoardPolicy
     /**
      * Determine whether the user can permanently delete the model.
      */
-    public function forceDelete(User $user, Board $board): bool
+    public function forceDelete(User $user, Question $question): bool
     {
         //
     }
