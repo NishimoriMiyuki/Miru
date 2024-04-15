@@ -16,8 +16,10 @@ class PageController extends Controller
 
     public function create()
     {
-        $pages = auth()->user()->pages;
-        return view('pages.create', compact('pages'));
+        $page = auth()->user()->pages()->create();
+        $page->title = "てすと";
+        
+        return view('pages.edit', compact('page'));
     }
 
     public function store(PageRequest $request)
@@ -48,8 +50,7 @@ class PageController extends Controller
     {
         $this->authorize('update', $page);
         
-        $pages = auth()->user()->pages;
-        return view('pages.edit', compact('pages', 'page'));
+        return view('pages.edit', compact('page'));
     }
 
     public function update(PageRequest $request, Page $page)
