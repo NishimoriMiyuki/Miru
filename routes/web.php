@@ -7,7 +7,6 @@ use App\Http\Controllers\BoardRowController;
 use App\Http\Controllers\QuestionController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\TagController;
-use App\Http\Controllers\PostController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () 
@@ -61,10 +60,5 @@ Route::post('/tags/store', [TagController::class, 'store'])->name('tags.store')-
 Route::post('/tags/attachTagToBoardRow', [TagController::class, 'attachTagToBoardRow'])->name('tags.attachTagToBoardRow')->middleware(['auth', 'verified']);
 Route::delete('/tags/detachTagFromBoardRow', [TagController::class, 'detachTagFromBoardRow'])->name('tags.detachTagFromBoardRow')->middleware(['auth', 'verified']);
 Route::delete('/tags/delete', [TagController::class, 'delete'])->name('tags.delete')->middleware(['auth', 'verified']);
-
-#postsルート
-Route::resource('posts', PostController::class)
-    ->only(['index', 'create', 'store'])
-    ->middleware(['auth', 'verified']);
 
 require __DIR__.'/auth.php';
