@@ -23,4 +23,19 @@ class Page extends Model
     {
         return $this->belongsTo(User::class);
     }
+    
+    public function scopeUpdatedOrder($query)
+    {
+        return $query->orderBy('updated_at', 'desc');
+    }
+    
+    public function scopeIsPublic($query, $value)
+    {
+        return $query->where('is_public', $value);
+    }
+    
+    public function scopeIsFavorite($query)
+    {
+        return $query->where('is_favorite', true);
+    }
 }

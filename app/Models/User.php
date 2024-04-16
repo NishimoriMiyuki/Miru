@@ -55,4 +55,19 @@ class User extends Authenticatable
     {
         return $this->hasMany(Page::class);
     }
+    
+    public function getPublicPages()
+    {
+        return $this->pages()->isPublic(true)->updatedOrder()->paginate(10);
+    }
+    
+    public function getPrivatePages()
+    {
+        return $this->pages()->isPublic(false)->updatedOrder()->paginate(10);
+    }
+    
+    public function getFavoritePages()
+    {
+        return $this->pages()->isFavorite()->updatedOrder()->paginate(10);
+    }
 }

@@ -7,6 +7,7 @@ use App\Http\Controllers\BoardRowController;
 use App\Http\Controllers\QuestionController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\TagController;
+use App\Livewire\PageEditor;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () 
@@ -21,12 +22,13 @@ Route::middleware('auth')->group(function () {
 });
 
 # Pagesルート
-Route::delete('pages/{page}/force_delete', [PageController::class, 'forceDelete'])->name('pages.force_delete')->middleware(['auth', 'verified']);
+Route::get('/pages/{page}/edit', PageEditor::class)->name('pages.edit')->middleware(['auth', 'verified']);
+Route::delete('/pages/{page}/force_delete', [PageController::class, 'forceDelete'])->name('pages.force_delete')->middleware(['auth', 'verified']);
 Route::get('/pages/trashed', [PageController::class, 'trashed'])->name('pages.trashed')->middleware(['auth', 'verified']);
 Route::post('/pages/{page}/restore', [PageController::class, 'restore'])->name('pages.restore')->middleware(['auth', 'verified']);
 
 Route::resource('pages', PageController::class)
-    ->only(['index', 'create', 'store', 'update', 'destroy', 'edit', 'show'])
+    ->only(['index', 'create', 'destroy', 'show'])
     ->middleware(['auth', 'verified']);
     
 # boardsルート
