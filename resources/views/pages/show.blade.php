@@ -3,13 +3,20 @@
         <x-page-header />
     </x-slot>
     
-    <!-- ページ内容表示 -->
-    <div class="w-3/4 h-[calc(100vh-45px)] bg-white overflow-auto p-4">
-        <div>
-            <input type="text" id="title" name="title" value="{{ $page->title }}" class="shadow appearance-none border border-transparent w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline text-3xl font-semibold" readonly>
-        </div>
-        <div>
-            <textarea id="content" name="content" rows="50" class="shadow appearance-none border border-transparent w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" readonly>{{ $page->content }}</textarea>
+    <x-slot name="alert">
+        このページはゴミ箱に入っています。{{ $page->deleted_at->format('Y年m月d日') }}に削除されました。
+    </x-slot>
+    
+    <div class="w-1/2 h-full pt-4">
+        <div class="flex flex-col border border-gray-300 p-2 rounded-lg">
+            <input type="text" name="title" placeholder="タイトルを入力" class="border-transparent focus:border-transparent focus:ring-0 focus:outline-none text-3xl font-semibold font-bold pr-10" value="{{ $page->title }}" readonly>
+            <textarea name="content" rows="30" placeholder="内容を入力" class="border-transparent focus:border-transparent focus:ring-0 focus:outline-none resize-none font-bold resize-none" readonly>{{ $page->content }}</textarea>
+            
+            <div class="bg-white pt-2">
+                編集日時: {{ $page->updated_at }}
+            </div>
+            
+            <livewire:page-tool-button-group :page="$page" />
         </div>
     </div>
 </x-app-layout>

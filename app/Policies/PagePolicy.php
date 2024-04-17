@@ -53,7 +53,7 @@ class PagePolicy
      */
     public function restore(User $user, Page $page): bool
     {
-        //
+        return $user->id === $page->user_id;
     }
 
     /**
@@ -61,6 +61,6 @@ class PagePolicy
      */
     public function forceDelete(User $user, Page $page): bool
     {
-        //
+        return $user->id === $page->user_id;
     }
 }

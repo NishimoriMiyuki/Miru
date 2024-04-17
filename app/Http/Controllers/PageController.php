@@ -13,85 +13,38 @@ class PageController extends Controller
         switch ($request->query('type')) {
             case 'public':
                 $type = 'public';
+                $title = 'メモ（パブリック）';
                 $pages = auth()->user()->getPublicPages();
                 break;
             case 'private':
                 $type = 'private';
+                $title = 'メモ（プライベート）';
                 $pages = auth()->user()->getPrivatePages();
                 break;
             case 'favorite':
                 $type = 'favorite';
+                $title = 'メモ（お気に入り）';
                 $pages = auth()->user()->getFavoritePages();
                 break;
+            case 'all':
+                $type = 'all';
+                $title = 'メモ(全て)';
+                $pages = auth()->user()->getAllPages();
+                break;
+            case 'trashed':
+                $type = 'trashed';
+                $title = 'メモ(ゴミ箱)';
+                $pages = auth()->user()->getTrashedPages();
+                break;
             default:
-                $type = 'private';
-                $pages = auth()->user()->getPrivatePages();
+                $type = 'all';
+                $title = 'メモ(全て)';
+                $pages = auth()->user()->getAllPages();
                 break;
         }
         
         $request->session()->put('type', $type);
         
-        return view('pages.index', compact('pages'));
-    }
-
-    public function create()
-    {
-        $page = auth()->user()->pages()->create();
-        $page->title = "無題";
-        $page->save();
-        
-        return redirect()->route('pages.edit', compact('page'));
-    }
-    
-    public function show($page)
-    {
-        $page = Page::withTrashed()->findOrFail($page);
-        
-        $this->authorize('view', $page);
-        
-        $trashedPages = auth()->user()->pages()->onlyTrashed()->get();
-        
-        return view('pages.show', compact('page', 'trashedPages'));
-    }
-
-    public function destroy(Page $page)
-    {
-        $this->authorize('delete', $page);
-        
-        $page->delete();
-        
-        session()->flash('message', 'ページを削除しました');
-        return redirect(route('pages.index'));
-    }
-    
-    public function forceDelete($page)
-    {
-        $page = Page::withTrashed()->findOrFail($page);
-        
-        $this->authorize('delete', $page);
-        
-        $page->forceDelete();
-        
-        session()->flash('message', 'ページを完全に削除しました');
-        return redirect(route('pages.trashed'));
-    }
-    
-    public function restore($page)
-    {
-        $page = Page::withTrashed()->findOrFail($page);
-        
-        $this->authorize('delete', $page);
-        
-        $page->restore();
-        
-        session()->flash('message', 'ページを復元しました');
-        return redirect(route('pages.trashed'));
-    }
-    
-    public function trashed()
-    {
-        $trashedPages = auth()->user()->pages()->onlyTrashed()->get();
-            
-        return view('pages.trashed', compact('trashedPages'));
+        return view('pages.index', compact('pages', 'title'));
     }
 }

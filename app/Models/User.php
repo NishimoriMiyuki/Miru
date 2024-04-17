@@ -70,4 +70,14 @@ class User extends Authenticatable
     {
         return $this->pages()->isFavorite()->updatedOrder()->paginate(10);
     }
+    
+    public function getAllPages()
+    {
+        return $this->pages()->updatedOrder()->paginate(10);
+    }
+    
+    public function getTrashedPages()
+    {
+        return $this->pages()->onlyTrashed()->paginate(10);
+    }
 }

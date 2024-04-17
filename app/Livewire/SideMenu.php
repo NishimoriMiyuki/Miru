@@ -20,12 +20,12 @@ class SideMenu extends Component
         return <<<'HTML'
         <div>
             @if ($open)
-                <aside class="w-64 bg-white p-4 fixed left-0 top-20 flex flex-col z-50"
+                <aside class="w-64 bg-white p-4 fixed left-0 top-20 flex flex-col z-50 h-full shadow"
                     wire:transition.slide.left.200ms="{{ $open ? 'enter' : 'leave' }}">
-                    <a href="#">だだだ</a>
-                    <a href="#">だだだ</a>
-                    <a href="#">だだだ</a>
-                    <a href="#">だだだ</a>
+                    <a href="{{ route('pages.index', ['type' => 'favorite']) }}">お気に入り</a>
+                    <a href="{{ route('pages.index', ['type' => 'public']) }}">パブリック</a>
+                    <a href="{{ route('pages.index', ['type' => 'private']) }}">プライベート</a>
+                    <a href="{{ route('pages.index', ['type' => 'trashed']) }}">ゴミ箱</a>
                 </aside>
             @endif
         </div>
