@@ -56,28 +56,33 @@ class User extends Authenticatable
         return $this->hasMany(Page::class);
     }
     
-    public function getPublicPages()
-    {
-        return $this->pages()->isPublic(true)->updatedOrder()->paginate(10);
-    }
+    // public function getPublicPages()
+    // {
+    //     return $this->pages()->isPublic(true)->updatedOrder()->paginate(20);
+    // }
     
-    public function getPrivatePages()
-    {
-        return $this->pages()->isPublic(false)->updatedOrder()->paginate(10);
-    }
+    // public function getPrivatePages()
+    // {
+    //     return $this->pages()->isPublic(false)->updatedOrder()->paginate(20);
+    // }
     
-    public function getFavoritePages()
-    {
-        return $this->pages()->isFavorite()->updatedOrder()->paginate(10);
-    }
+    // public function getFavoritePages()
+    // {
+    //     return $this->pages()->isFavorite()->updatedOrder()->paginate(20);
+    // }
     
-    public function getAllPages()
-    {
-        return $this->pages()->updatedOrder()->paginate(10);
-    }
+    // public function getAllPages()
+    // {
+    //     return $this->pages()->updatedOrder()->paginate(20);
+    // }
     
     public function getTrashedPages()
     {
-        return $this->pages()->onlyTrashed()->paginate(10);
+        return $this->pages()->onlyTrashed()->orderBy('deleted_at', 'desc')->get();
+    }
+    
+    public function getOrderPages()
+    {
+        return $this->pages()->orderBy('order')->get();
     }
 }

@@ -8,24 +8,26 @@
         @if($pages->isEmpty())
             <p>ページはありません。</p>
         @else
-            @foreach ($pages as $page)
-                <div class="block">
-                    <div class="bg-white border border-gray-300 p-2 rounded-lg">
-                        <a href="{{ route($page->trashed() ? 'pages.deleted_show' : 'pages.edit', ['page' => $page->id]) }}">
-                            <div class="font-bold text-3xl">
-                                {{ $page->title }}
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                @foreach ($pages as $page)
+                    <div class="block h-64">
+                        <div class="bg-white border border-gray-300 p-2 rounded-lg h-full flex flex-col">
+                            <a href="{{ route($page->trashed() ? 'pages.deleted_show' : 'pages.edit', ['page' => $page->id]) }}" class="flex-grow overflow-auto">
+                                <div class="font-bold text-3xl">
+                                    {{ \Illuminate\Support\Str::limit($page->title, 20) }}
+                                </div>
+                                <div class="mt-2">
+                                    {{ \Illuminate\Support\Str::limit($page->content, 100) }}
+                                </div>
+                            </a>
+                            <div class="mt-0">
+                                <livewire:page-tool-button-group :page="$page" />
                             </div>
-                            <div class="mt-2">
-                                {{ $page->content }}
-                            </div>
-                        </a>
-                        <div class="mt-0">
-                            <livewire:page-tool-button-group :page="$page" />
                         </div>
                     </div>
-                </div>
-            @endforeach
-        {{ $pages->appends(['type' => request('type')])->links() }}
+                @endforeach
+            </div>
+            {{ $pages->appends(['type' => request('type')])->links() }}
         @endif
     </div>
 </x-app-layout>

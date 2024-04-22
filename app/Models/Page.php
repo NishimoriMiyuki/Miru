@@ -17,6 +17,7 @@ class Page extends Model
         'title',
         'content',
         'user_id',
+        'order',
     ];
     
     public function user()

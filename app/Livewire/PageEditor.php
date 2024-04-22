@@ -8,7 +8,7 @@ use Livewire\Component;
 
 class PageEditor extends Component
 {
-    public Page $page;
+    public $page;
     
     #[Validate('required', message: 'タイトルは必須です')]
     #[Validate('max:50', message: 'タイトルは最大50文字です')]   
@@ -17,13 +17,18 @@ class PageEditor extends Component
     #[Validate('max:2000', message: '内容は最大2000文字です')]
     public $content;
     
+    public $isFavorite;
+    public $isPublic;
+    
     public function mount(Page $page)
     {
-        $this->authorize('update', $page);
+        $this->authorize('update', $this->page);
         
         $this->page = $page;
         $this->title = $this->page->title;
         $this->content = $this->page->content;
+        $this->isFavorite = $this->page->is_favorite;
+        $this->isPublic = $this->page->is_public;
     }
     
     public function updatedTitle()
@@ -44,27 +49,56 @@ class PageEditor extends Component
         $this->page->save();
     }
     
+    public function toggleFavorite()
+    {
+        $this->isFavorite = !$this->isFavorite;
+        
+        $this->authorize('update', $this->page);
+        $this->page->is_favorite = $this->isFavorite;
+        $this->page->save();
+    }
+    
+    public function togglePublic()
+    {
+        $this->isPublic = !$this->isPublic;
+        
+        $this->authorize('update', $this->page);
+        $this->page->is_public = $this->isPublic;
+        $this->page->save();
+    }
+    
+    public function delete()
+    {
+        $this->authorize('delete', $this->page);
+        $this->page->delete();
+        
+        $this->close();
+        $this->dispatch('delete-page', pageId: $this->page->id);
+    }
+    
+    public function forceDelete()
+    {
+        $this->authorize('forceDelete', $this->page);
+        $this->page->forceDelete();
+        
+        $this->close();
+    }
+    
+    public function restore()
+    {
+        $this->authorize('restore', $this->page);
+        $this->page->restore();
+        
+        $this->close();
+    }
+    
+    public function close()
+    {
+        $this->dispatch('close-edit');
+    }
+    
     public function render()
     {
-        return <<<'HTML'
-        <x-slot name="header">
-            <x-page-header />
-        </x-slot>
-        
-        <div class="w-1/2 h-full pt-4">
-                @error('title') <span class="error text-red-500 font-bold">{{ $message }}</span> @enderror
-                @error('content') <span class="error text-red-500 font-bold">{{ $message }}</span> @enderror
-            <div class="flex flex-col border border-gray-300 p-2 rounded-lg">
-                <input type="text" wire:model.live.debounce.500ms="title" maxlength="50" placeholder="タイトルを入力" class="border-transparent focus:border-transparent focus:ring-0 focus:outline-none text-3xl font-semibold font-bold pr-10" value="{{ $page->title }}">
-                <textarea wire:model.live.debounce.500ms="content" rows="30" maxlength="2000" placeholder="内容を入力" class="border-transparent focus:border-transparent focus:ring-0 focus:outline-none resize-none font-bold resize-none">{{ $page->content }}</textarea>
-                
-                <div class="bg-white pt-2">
-                    編集日時: {{ $page->updated_at }}
-                </div>
-                
-                <livewire:page-tool-button-group :page="$page" />
-            </div>
-        </div>
-        HTML;
+        return view('livewire.page-editor');
     }
 }
