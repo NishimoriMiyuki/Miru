@@ -104,26 +104,6 @@ class PageIndex extends Component
         });
     }
     
-    public function forceDelete(Page $page)
-    {
-        $this->authorize('forceDelete', $page);
-        $page->forceDelete();
-    
-        $this->pages = $this->pages->filter(function ($p) use ($page) {
-            return $p->id !== $page->id;
-        });
-    }
-    
-    public function restore(Page $page)
-    {
-        $this->authorize('restore', $page);
-        $page->restore();
-    
-        $this->pages = $this->pages->map(function ($p) use ($page) {
-            return $p->id === $page->id ? $page->fresh() : $p;
-        });
-    }
-    
     public function render()
     {
         return view('livewire.page-index', ['pages' => $this->pages]);

@@ -23,7 +23,7 @@ class SideMenu extends Component
                 <aside class="w-64 bg-white p-4 fixed left-0 top-20 flex flex-col z-50 h-full shadow"
                     wire:transition.slide.left.200ms="{{ $open ? 'enter' : 'leave' }}">
                     <a href="{{ route('pages.index') }}">メモ一覧</a>
-                    <a href="">ゴミ箱</a>
+                    <a href="{{ route('pages.trashed') }}">ゴミ箱</a>
                 </aside>
             @endif
         </div>

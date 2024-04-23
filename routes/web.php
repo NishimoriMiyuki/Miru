@@ -10,6 +10,7 @@ use App\Http\Controllers\TagController;
 use App\Livewire\PageEditor;
 use App\Livewire\PageDeletedShow;
 use App\Livewire\PageIndex;
+use App\Livewire\PageTrashed;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () 
@@ -24,9 +25,8 @@ Route::middleware('auth')->group(function () {
 });
 
 # Pagesルート
-Route::get('/pages/{page}/edit', PageEditor::class)->name('pages.edit')->middleware(['auth', 'verified']);
-Route::get('/pages/{page}/deleted_show', PageDeletedShow::class)->name('pages.deleted_show')->middleware(['auth', 'verified']);
 Route::get('/pages', PageIndex::class)->name('pages.index')->middleware(['auth', 'verified']);
+Route::get('/pages/trashed', PageTrashed::class)->name('pages.trashed')->middleware(['auth', 'verified']);
     
 # boardsルート
 Route::delete('boards/{board}/force_delete', [BoardController::class, 'forceDelete'])->name('boards.force_delete')->middleware(['auth', 'verified']);

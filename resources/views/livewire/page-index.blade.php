@@ -1,5 +1,5 @@
 <x-slot name="header">
-    <x-page-header :title="null" />
+    <x-page-header :title="'メモ（一覧）'" />
 </x-slot>
     
 <div class="w-1/2 h-full space-y-4 pt-4 flex flex-col container">
@@ -10,7 +10,7 @@
     <livewire:page-create />
     
     @if($pages->isEmpty())
-        <p>ページはありません。</p>
+        <p>メモがありません。</p>
     @else
         <style>
             .page-container {
