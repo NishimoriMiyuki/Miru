@@ -27,16 +27,13 @@
         }
     </style>
     
-    @error('title') <span class="error text-red-500 font-bold">{{ $message }}</span> @enderror
+    <textarea wire:model.live.debounce.500ms="content" rows="30" maxlength="2000" placeholder="内容を入力" class="border-transparent focus:border-transparent focus:ring-0 focus:outline-none resize-none resize-none" autofocus>{{ $page->content }}</textarea>
     @error('content') <span class="error text-red-500 font-bold">{{ $message }}</span> @enderror
-    <input type="text" wire:model.live.debounce.500ms="title" maxlength="50" placeholder="タイトルを入力" class="border-transparent focus:border-transparent focus:ring-0 focus:outline-none text-3xl font-semibold font-bold pr-10" value="{{ $page->title }}">
-    <textarea wire:model.live.debounce.500ms="content" rows="30" maxlength="2000" placeholder="内容を入力" class="border-transparent focus:border-transparent focus:ring-0 focus:outline-none resize-none font-bold resize-none" autofocus>{{ $page->content }}</textarea>
-    
     <div class="bg-white pt-2">
         編集日時: {{ $page->updated_at }}
     </div>
     
-    <div class="toolbar">
+    <div class="toolbar text-gray-300">
         <div class="tool">
             <button wire:click="delete">
                 <span class="material-symbols-outlined">
@@ -50,7 +47,7 @@
         <div class="tool">
             <button wire:click="toggleFavorite">
                 @if($page->is_favorite)
-                    <span class="material-symbols-outlined">
+                    <span class="material-symbols-outlined text-pink-400">
                         heart_check
                     </span>
                 @else
@@ -70,7 +67,7 @@
         <div class="tool">
             <button wire:click="togglePublic" wire:confirm="{{ $page->is_public ? '非公開にしますか？':'公開しますか？' }}">
                 @if($page->is_public)
-                    <span class="material-symbols-outlined">
+                    <span class="material-symbols-outlined text-blue-400">
                         public
                     </span>
                 @else
@@ -88,6 +85,9 @@
             </div>
         </div>
     </div>
+    <button wire:click="close" style="cursor: pointer;">
+        閉じる
+    </button>
 </div>
         
 @script

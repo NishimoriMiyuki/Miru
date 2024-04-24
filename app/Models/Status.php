@@ -9,5 +9,7 @@ class Status extends Model
 {
     use HasFactory;
     
+    protected $fillable = ['order'];
+    
     public $timestamps = false;
 }

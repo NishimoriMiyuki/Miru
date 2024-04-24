@@ -39,4 +39,31 @@ class Page extends Model
     {
         return $query->where('is_favorite', true);
     }
+    
+    public function getFirstLineAttribute()
+    {
+        $content = ltrim($this->content);
+        $breakPosition = mb_strpos($content, "\n");
+        $maxLength = 30;
+    
+        if ($breakPosition === false) {
+            return mb_substr($content, 0, $maxLength);
+        } else {
+            return mb_substr($content, 0, min($breakPosition, $maxLength));
+        }
+    }
+    
+    public function getRestOfContentAttribute()
+    {
+        $content = ltrim($this->content);
+        $breakPosition = mb_strpos($content, "\n");
+        $maxLength = 100;
+    
+        if ($breakPosition === false) {
+            return '';
+        } else {
+            $restOfContentStartPosition = min($breakPosition + 1, mb_strlen($content));
+            return mb_substr($content, $restOfContentStartPosition, $maxLength);
+        }
+    }
 }

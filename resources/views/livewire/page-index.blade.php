@@ -2,8 +2,8 @@
     <x-page-header :title="'メモ（一覧）'" />
 </x-slot>
     
-<div class="w-1/2 h-full space-y-4 pt-4 flex flex-col container">
-    <div wire:loading style="position: absolute; z-index: 9999;">
+<div class="h-full container">
+    <div wire:loading style="position: absolute; z-index: 9999; right: 0;">
         <div class="loader">Loading...</div>
     </div>
     
@@ -87,6 +87,25 @@
                 display: none;
             }
             
+            .modal-overlay {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background-color: rgba(0,0,0,0.5);
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                z-index: 9999;
+            }
+            
+            .modal-content {
+                background-color: white;
+                padding: 20px;
+                border-radius: 8px;
+            }
+            
             .sortable-chosen {
               opacity: 0.5;
               background-color: #f0f0f0;
@@ -103,17 +122,17 @@
             @foreach($pages as $page)
                 <div class="page" wire:sortable.item="{{ $page->id }}" wire:key="page-{{ $page->id }}">
                     <div class="drag-handle" wire:sortable.handle>
-                        <span class="material-symbols-outlined">
-                        drag_handle
+                        <span class="material-symbols-outlined text-gray-300">
+                            drag_handle
                         </span>
                     </div> 
                     <div class="text-content">
                         <a wire:click="edit({{ $page }})">
-                            <div class="font-bold text-3xl break-words break-all">{{ \Illuminate\Support\Str::limit($page->title, 20) }}</div>
-                            <div class="mt-2 break-words">{{ \Illuminate\Support\Str::limit($page->content, 100) }}</div>
+                            <p class="font-bold">{{ $page->firstLine }}</p>
+                            <p>{{ $page->restOfContent }}</p>
                         </a>
                     </div>
-                    <div class="toolbar">
+                    <div class="toolbar text-gray-300">
                         <div class="tool">
                             <button wire:click="delete({{ $page }})">
                                 <span class="material-symbols-outlined">
@@ -127,7 +146,7 @@
                         <div class="tool">
                             <button wire:click="toggleFavorite({{ $page }})">
                                 @if($page->is_favorite)
-                                    <span class="material-symbols-outlined">
+                                    <span class="material-symbols-outlined text-pink-400">
                                         heart_check
                                     </span>
                                 @else
@@ -147,7 +166,7 @@
                         <div class="tool">
                             <button wire:click="togglePublic({{ $page }})" wire:confirm="{{ $page->is_public ? '非公開にしますか？':'公開しますか？' }}">
                                 @if($page->is_public)
-                                    <span class="material-symbols-outlined">
+                                    <span class="material-symbols-outlined text-blue-400">
                                         public
                                     </span>
                                 @else
@@ -171,11 +190,11 @@
     @endif
     
     @if($isEditOpen)
-    <div style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); display: flex; justify-content: center; align-items: center; z-index: 9999;" wire:click.self="$set('isEditOpen', false)">
-        <div style="background-color: white; padding: 20px; border-radius: 8px;">
-            <livewire:page-editor :page="$selectedPage" />
+        <div class="modal-overlay">
+            <div class="modal-content">
+                <livewire:page-editor :page="$selectedPage" />
+            </div>
         </div>
-    </div>
     @endif
 </div>
 

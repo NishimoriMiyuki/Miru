@@ -10,10 +10,7 @@ class PageEditor extends Component
 {
     public $page;
     
-    #[Validate('required', message: 'タイトルは必須です')]
-    #[Validate('max:50', message: 'タイトルは最大50文字です')]   
-    public $title;
-    
+    #[Validate('required', message: '内容は必須です')]
     #[Validate('max:2000', message: '内容は最大2000文字です')]
     public $content;
     
@@ -25,20 +22,9 @@ class PageEditor extends Component
         $this->authorize('update', $this->page);
         
         $this->page = $page;
-        $this->title = $this->page->title;
         $this->content = $this->page->content;
         $this->isFavorite = $this->page->is_favorite;
         $this->isPublic = $this->page->is_public;
-    }
-    
-    public function updatedTitle()
-    {
-        $this->authorize('update', $this->page);
-        $this->validateOnly('title');
-        $this->page->title = $this->title;
-        $this->page->save();
-        
-        $this->dispatch('update-page-title');
     }
     
     public function updatedContent()

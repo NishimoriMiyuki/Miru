@@ -6,7 +6,7 @@
     ゴミ箱内のメモは 7 日後に削除されます。
 </x-slot>
     
-<div class="w-1/2 h-full space-y-4 pt-4 flex flex-col container">
+<div class="h-full container">
     <div wire:loading style="position: absolute; z-index: 9999;">
         <div class="loader">Loading...</div>
     </div>

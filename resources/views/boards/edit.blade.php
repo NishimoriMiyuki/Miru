@@ -1,114 +1,39 @@
 <x-app-layout>
-    <!-- フラッシュメッセージ -->
-    @if (session('message'))
-        <div class="bg-green-500 text-white relative">
-            {{ session('message') }}
-        <!-- フラッシュメッセージを消すボタン -->
-        <button type="button" class="absolute top-0 right-0 px-4 py-3 text-white" onclick="this.parentElement.remove();">
-            ×
-        </button>
-        </div>
-    @endif
+    <x-slot name="header">
+        <x-board-header :title="'ボード（一覧）'" />
+    </x-slot>
     
-    <div class="flex">
+    <!-- BoardRow作成ボタン -->
+    <div class="p-4">
+        <a href="{{ route('board_rows.store', $board) }}" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
+            問題作成
+        </a>
+    </div>
     
-        <!-- サイドバー -->
-        <div class="w-1/4 h-screen bg-gray-200 overflow-auto">
-            
-            <!-- ボタン -->
-            <div class="p-4 flex flex-col space-y-2">
-                <a href="{{ route('boards.create') }}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-                    新規作成
-                </a>
-                <a href="{{ route('boards.trashed') }}" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
-                    ゴミ箱を開く
-                </a>
+    <!-- boardRow表示用 -->
+    <div class="mt-4 flex flex-wrap">
+        @foreach ($statuses as $status)
+            <div class="w-1/3 p-4">
+                <div class="bg-white rounded shadow p-4">
+                    <h2 class="text-xl">{{ $status->type }}</h2>
+                    @if (isset($groupedRows[$status->id]))
+                        @foreach ($groupedRows[$status->id] as $boardRow)
+                            <div class="mt-4 shadow-md flex">
+                                <a href="{{ route('board_rows.edit', $boardRow) }}">
+                                    <h3 class="text-lg">{{ $boardRow->title }}</h3>
+                                    <p>{{ $boardRow->quiz_content }}</p>
+                                </a>
+                                <!-- 削除ボタン -->
+                                <form action="{{ route('board_rows.destroy', $boardRow) }}" method="POST">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit">削除</button>
+                                </form>
+                            </div>
+                        @endforeach
+                    @endif
+                </div>
             </div>
-            
-            <!-- 各ページのリンク -->
-            <ul class="space-y-2 p-4">
-                @foreach ($boards as $linkboard)
-                    <li>
-                        <div class="flex justify-between">
-                            <a href="{{ route('boards.edit', $linkboard) }}" class="text-blue-500 hover:underline">
-                                {{ \Illuminate\Support\Str::limit($linkboard->name, 20) }}
-                            </a>
-                            <!-- ドロップダウンメニュー -->
-                            <x-dropdown align="right" width="48">
-                                <x-slot name="trigger">
-                                    <button class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 hover:text-gray-700 focus:outline-none transition ease-in-out duration-150">
-                                        <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
-                                            <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
-                                        </svg>
-                                    </button>
-                                </x-slot>
-                                <x-slot name="content">
-                                    <!-- 削除ボタン -->
-                                    <form method="POST" action="{{ route('boards.destroy', $linkboard) }}">
-                                        @csrf
-                                        @method('DELETE')
-                                        <x-dropdown-link :href="route('boards.destroy', $linkboard)"
-                                                onclick="event.preventDefault();
-                                                            this.closest('form').submit();">
-                                            {{ __('削除') }}
-                                        </x-dropdown-link>
-                                    </form>
-                                </x-slot>
-                            </x-dropdown>
-                        </div>
-                    </li>
-                @endforeach
-            </ul>
-        </div>
-        
-        <div class="container mx-auto">
-            
-            <!-- ボード名入力フォーム -->
-            <div class="p-4">
-                <form action="{{ route('boards.update', $board) }}" method="POST">
-                    @csrf
-                    @method('PUT')
-                    <input type="text" name="name" class="w-full px-3 py-2 border border-gray-300 rounded" placeholder="ボード名を入力" value="{{ $board->name }}">
-                    <button type="submit" class="mt-2 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-                        変更
-                    </button>
-                </form>
-            </div>
-            
-            <!-- BoardRow作成ボタン -->
-            <div class="p-4">
-                <a href="{{ route('board_rows.store', $board) }}" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
-                    問題作成
-                </a>
-            </div>
-            
-            <!-- boardRow表示用 -->
-            <div class="mt-4 flex flex-wrap">
-                @foreach ($statuses as $status)
-                    <div class="w-1/3 p-4">
-                        <div class="bg-white rounded shadow p-4">
-                            <h2 class="text-xl">{{ $status->type }}</h2>
-                            @if (isset($groupedRows[$status->id]))
-                                @foreach ($groupedRows[$status->id] as $boardRow)
-                                    <div class="mt-4 shadow-md flex">
-                                        <a href="{{ route('board_rows.edit', $boardRow) }}">
-                                            <h3 class="text-lg">{{ $boardRow->title }}</h3>
-                                            <p>{{ $boardRow->quiz_content }}</p>
-                                        </a>
-                                        <!-- 削除ボタン -->
-                                        <form action="{{ route('board_rows.destroy', $boardRow) }}" method="POST">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit">削除</button>
-                                        </form>
-                                    </div>
-                                @endforeach
-                            @endif
-                        </div>
-                    </div>
-                @endforeach
-            </div>
-        </div>
-        
+        @endforeach
     </div>
 </x-app-layout>
