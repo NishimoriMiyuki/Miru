@@ -129,5 +129,7 @@ class BoardEditor extends Component
             'title' => $this->title,
             'quiz_content' => $this->quizContent,
         ]);
+        
+        $this->dispatch('toaster', [ 'message' => '保存されました' ]);
     }
 }

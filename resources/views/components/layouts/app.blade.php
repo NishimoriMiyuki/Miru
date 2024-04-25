@@ -38,6 +38,8 @@
             <main class="flex justify-center items-center text-center h-[calc(100vh-45px-64px-82px)] overflow-auto mt-4">
                 {{ $slot }}
             </main>
+            
+            <livewire:toaster />
         </div>
     </body>
 </html>

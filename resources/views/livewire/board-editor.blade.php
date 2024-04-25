@@ -180,7 +180,14 @@
     </div>
     
     <!-- BoardRowEdit -->
-    <div x-cloak x-show="$wire.isEditOpen" x-transition:enter="transition ease-out duration-100" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="transition ease-in duration-100" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" class="modal">
+    <div x-cloak x-show="$wire.isEditOpen" 
+        x-transition:enter="transition ease-out duration-100 transform" 
+        x-transition:enter-start="opacity-0 translate-y-4" 
+        x-transition:enter-end="opacity-100 translate-y-0" 
+        x-transition:leave="transition ease-in duration-100 transform" 
+        x-transition:leave-start="opacity-100 translate-y-0" 
+        x-transition:leave-end="opacity-0 translate-y-4" 
+        class="modal">
         <div class="modal-content">
             <form wire:submit="saveBoardRow">
                 <div class="modal-header">
