@@ -1,5 +1,5 @@
 <x-slot name="header">
-    <x-page-header :title="'メモ（一覧）'" />
+    <x-page-header :title="'メモ'" />
 </x-slot>
     
 <div class="h-full container">

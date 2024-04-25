@@ -36,7 +36,6 @@
             @endif
 
             <!-- Page Content -->
-            <livewire:side-menu />
             <main class="flex justify-center items-center text-center h-[calc(100vh-45px-64px-82px)] overflow-auto mt-4">
                 {{ $slot }}
             </main>

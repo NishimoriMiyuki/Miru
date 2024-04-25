@@ -27,7 +27,7 @@
         }
     </style>
     
-    <textarea wire:model.live.debounce.500ms="content" rows="30" maxlength="2000" placeholder="内容を入力" class="border-transparent focus:border-transparent focus:ring-0 focus:outline-none resize-none resize-none" autofocus>{{ $page->content }}</textarea>
+    <textarea wire:model.live.debounce.500ms="content" rows="30" maxlength="2000" placeholder="内容を入力" class="border-transparent focus:border-transparent focus:ring-0 focus:outline-none resize-none" autofocus>{{ $page->content }}</textarea>
     @error('content') <span class="error text-red-500 font-bold">{{ $message }}</span> @enderror
     <div class="bg-white pt-2">
         編集日時: {{ $page->updated_at }}

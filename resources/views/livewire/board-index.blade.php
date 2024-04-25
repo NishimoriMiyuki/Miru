@@ -1,5 +1,5 @@
 <x-slot name="header">
-    <x-board-header :title="'ボード（一覧）'" />
+    <x-board-header :title="'ボード'" />
 </x-slot>
 
 <div class="h-full container">
