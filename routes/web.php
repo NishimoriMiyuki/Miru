@@ -40,11 +40,11 @@ Route::get('/boards/{board}/edit', BoardEditor::class)->name('boards.edit')->mid
 //     ->middleware(['auth', 'verified']);
 
 # board_rowsルート
-Route::get('/board_rows/{board}/store', [BoardRowController::class, 'store'])->name('board_rows.store')->middleware(['auth', 'verified']);
+// Route::get('/board_rows/{board}/store', [BoardRowController::class, 'store'])->name('board_rows.store')->middleware(['auth', 'verified']);
 
-Route::resource('board_rows', BoardRowController::class)
-    ->only(['update', 'destroy', 'edit'])
-    ->middleware(['auth', 'verified']);
+// Route::resource('board_rows', BoardRowController::class)
+//     ->only(['update', 'destroy', 'edit'])
+//     ->middleware(['auth', 'verified']);
     
 # questionsルート
 Route::resource('questions', QuestionController::class)
