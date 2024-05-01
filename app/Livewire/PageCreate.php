@@ -38,24 +38,66 @@ class PageCreate extends Component
     {
         return <<<'HTML'
         <div>
+            <style>
+                .create-bar {
+                    width: 600px;
+                    height: 46px;
+                    background-color: #fff;
+                    padding: 6px 12px;
+                    cursor: text;
+                    text-align: left;
+                    box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.5);
+                    border-radius: 10px;
+                    font-size: 14px;
+                }
+                
+                .create-edit {
+                    display: inline-block;
+                    width: 600px;
+                    border-radius: 10px; 
+                    box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.5);
+                    text-align: right;
+                    font-size: 14px;
+                }
+                
+                .create-textarea {
+                    border-color: transparent;
+                    outline: none;
+                    resize: none;
+                    width: 100%;
+                    border-radius: 10px;
+                    font-size: 14px;
+                }
+                
+                .create-textarea:focus {
+                    border-color: transparent;
+                    outline: none;
+                    box-shadow: none;
+                }
+                
+                .tool-button {
+                    padding: 4px 24px;
+                    border-radius: 5px;
+                }
+                
+                .tool-button:hover {
+                    background-color: #f2f2f2;
+                }
+                
+            </style>
+            
             @if(!$this->isOpen)
-                <button wire:click="toggleIsOpen(true)" style="width: 500px; background-color: #fff; #ccc; padding: 6px 12px; cursor: text; text-align: left; box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2); border-radius: 10px;">メモの入力...</button>
+                <button wire:click="toggleIsOpen(true)" class="create-bar">メモを入力...</button>
             @endif
             
             @if($this->isOpen)
-            <div style="display: inline-block; width: 500px; border-radius: 10px; box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);">
+            <div class="create-edit">
                 @error('content') <span class="error text-red-500 font-bold">{{ $message }}</span> @enderror
-                <div style="text-align: right;">
-                    <button wire:click="toggleIsOpen(false)">
-                        <span class="material-symbols-outlined text-gray-500">
-                            close
-                        </span>
-                    </button>
-                </div>
                 <div>
-                    <textarea wire:model="content" rows="3" maxlength="2000" placeholder="内容を入力" class="border-transparent focus:border-transparent focus:ring-0 focus:outline-none resize-none" style="width: 100%;" autofocus></textarea>
+                    <textarea wire:model="content" rows="3" maxlength="2000" placeholder="メモを入力..." class="create-textarea" autofocus></textarea>
                 </div>
-                <button wire:click="create" style="border: 1px solid; padding: 0 5px; border-radius: 5px;" class="text-gray-500">作成</button>
+                <button class="tool-button" wire:click="create">作成</button>
+                <button class="tool-button" wire:click="toggleIsOpen(false)">閉じる</button>
             </div>
             @endif
         </div>

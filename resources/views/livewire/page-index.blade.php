@@ -2,11 +2,7 @@
     <x-page-header />
 </x-slot>
     
-<div class="h-full container">
-    <div wire:loading style="position: absolute; z-index: 9999; right: 0;">
-        <div class="loader">Loading...</div>
-    </div>
-    
+<div class="container">
     <livewire:page-create />
     
     @if($pages->isEmpty())
@@ -16,7 +12,7 @@
             .page-container {
               display: grid;
               grid-template-columns: repeat(auto-fill, minmax(225px, 1fr));
-              gap: 20px;
+              gap: 8px 4px;
               padding: 50px 0;
             }
             
@@ -28,14 +24,14 @@
                 position: relative;
                 background-color: #fff;
                 border-radius: 8px;
-                box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+                border: 1px solid #D1D5DB;
                 padding: 20px;
                 transition: all 0.3s cubic-bezier(.25,.8,.25,1);
                 display: flex;
                 flex-direction: column;
                 justify-content: space-between;
-                width: 225px;
-                height: 225px;
+                width: 240px;
+                height: 100px;
             }
             
             .text-content {
@@ -74,7 +70,7 @@
                 text-align: center;
                 padding: 5px 10px;
                 border-radius: 6px;
-                z-index: 1;
+                z-index: 999;
                 top: 100%; 
                 left: 50%; 
                 transform: translateX(-50%);
@@ -82,10 +78,12 @@
             }
             
             .page .toolbar {
+                opacity: 0;
+                visibility: hidden;
+                transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
                 position: absolute;
                 bottom: 0;
                 right: 0;
-                display: none;
             }
             
             .modal-overlay {
@@ -214,14 +212,18 @@
         if (element.matches('.page')) {
             element.addEventListener('mouseover', function() {
                 if (!isDragging) {
-                    this.style.boxShadow = '0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22)';
-                    this.querySelector('.toolbar').style.display = 'flex';
+                    this.style.boxShadow = '0 0 5px 1px rgba(0,0,0,0.3)';
+                    const toolbar = this.querySelector('.toolbar');
+                    toolbar.style.opacity = '1';
+                    toolbar.style.visibility = 'visible';
                 }
             });
 
             element.addEventListener('mouseout', function() {
                 this.style.boxShadow = '';
-                this.querySelector('.toolbar').style.display = '';
+                const toolbar = this.querySelector('.toolbar');
+                toolbar.style.opacity = '0';
+                toolbar.style.visibility = 'hidden';
             });
         }
 

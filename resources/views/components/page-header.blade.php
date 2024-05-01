@@ -46,7 +46,9 @@
             </div>
             
             <!-- サイドメニュー -->
-            <aside x-show="open" :class="{ 'open': open }" class="sidebar"
+            <aside x-show="open" 
+                :class="{ 'open': open }" 
+                class="sidebar"
                 x-transition:enter="transition ease-out duration-300"
                 x-transition:enter-start="opacity-0 transform -translate-x-full"
                 x-transition:enter-end="opacity-100 transform translate-x-0"

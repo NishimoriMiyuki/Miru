@@ -3,24 +3,151 @@
 </x-slot>
 
 <div class="h-full container">
+    <style>
+        .board-container {
+          display: grid;
+          grid-template-columns: repeat(auto-fill, minmax(225px, 1fr));
+          gap: 20px;
+          padding: 50px 0;
+        }
+        
+        .board-container > * {
+            flex: 0 0 225px;
+        }
+        
+        .board {
+            position: relative;
+            background-color: #fff;
+            border-radius: 8px;
+            border: 1px solid #D1D5DB;
+            padding: 20px;
+            transition: all 0.3s cubic-bezier(.25,.8,.25,1);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            width: 225px;
+            height: 225px;
+        }
+        
+        .name-content {
+            max-height: calc(100% - 20px);
+            overflow: hidden;
+            position: relative;
+            cursor: pointer;
+        }
+        
+        .drag-handle {
+          position: absolute;
+          top: 0;
+          left: 50%;
+          transform: translate(-50%);
+          z-index: 1;
+          cursor: pointer;
+        }
+    
+        .toolbar {
+            display: flex;
+            justify-content: flex-end;
+        }
+        
+        .tool {
+            display: inline-block;
+            margin-right: 10px;
+            position: relative;
+        }
+        
+        .tool .tooltip {
+            display: none;
+            position: absolute;
+            background-color: #555;
+            color: #fff;
+            text-align: center;
+            padding: 5px 10px;
+            border-radius: 6px;
+            z-index: 1;
+            top: 100%; 
+            left: 50%;
+            transform: translateX(-50%);
+            writing-mode: vertical-lr;
+        }
+        
+        .board .toolbar {
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
+            position: absolute;
+            bottom: 0;
+            right: 0;
+        }
+        
+        .sortable-chosen {
+          opacity: 0.5;
+          background-color: #f0f0f0;
+          transition: all 0.3s ease;
+        }
+        
+        .sortable-ghost {
+          opacity: 0;
+        }
+        
+        .create-bar {
+            width: 600px;
+            height: 46px;
+            background-color: #fff;
+            padding: 6px 12px;
+            cursor: text;
+            text-align: left;
+            box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.5);
+            border-radius: 10px;
+            font-size: 14px;
+        }
+        
+        .create-edit {
+            display: inline-block;
+            width: 600px;
+            border-radius: 10px; 
+            box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.5);
+            text-align: right;
+            font-size: 14px;
+        }
+        
+        .create-textarea {
+            border-color: transparent;
+            outline: none;
+            resize: none;
+            width: 100%;
+            border-radius: 10px;
+            font-size: 14px;
+        }
+        
+        .create-textarea:focus {
+            border-color: transparent;
+            outline: none;
+            box-shadow: none;
+        }
+        
+        .tool-button {
+            padding: 4px 24px;
+            border-radius: 5px;
+        }
+        
+        .tool-button:hover {
+            background-color: #f2f2f2;
+        }
+    </style>
+    
     <!-- ボード作成 -->
     <div>
         @if(!$isOpen)
-            <button wire:click="toggleIsOpen(true)" style="width: 500px; background-color: #fff; #ccc; padding: 6px 12px; cursor: text; text-align: left; box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2); border-radius: 10px;">ボードの作成...</button>
+            <button wire:click="toggleIsOpen(true)" class="create-bar">ボードの作成...</button>
         @else
-            <div style="display: inline-block; width: 500px; border-radius: 10px; box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);">
+            <div class="create-edit">
                 @error('name') <span class="error text-red-500 font-bold">{{ $message }}</span> @enderror
-                <div style="text-align: right;">
-                    <button wire:click="toggleIsOpen(false)">
-                        <span class="material-symbols-outlined text-gray-500">
-                            close
-                        </span>
-                    </button>
-                </div>
                 <div>
-                    <input type="text" wire:model="name" maxlength="255" placeholder="ボード名を入力" class="border-transparent focus:border-transparent focus:ring-0 focus:outline-none" style="width: 100%;" autofocus>
+                    <textarea wire:model="name" maxlength="255" placeholder="ボード名を入力..." class="create-textarea" autofocus></textarea>
                 </div>
-                <button wire:click="create" style="border: 1px solid; padding: 0 5px; border-radius: 5px;" class="text-gray-500">作成</button>
+                <button class="tool-button" wire:click="create">作成</button>
+                <button class="tool-button" wire:click="toggleIsOpen(false)">閉じる</button>
             </div>
         @endif
     </div>
@@ -28,92 +155,6 @@
     @if($boards->isEmpty())
         <p>ボードがありません。</p>
     @else
-        <style>
-            .board-container {
-              display: grid;
-              grid-template-columns: repeat(auto-fill, minmax(225px, 1fr));
-              gap: 20px;
-              padding: 50px 0;
-            }
-            
-            .board-container > * {
-                flex: 0 0 225px;
-            }
-            
-            .board {
-                position: relative;
-                background-color: #fff;
-                border-radius: 8px;
-                box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
-                padding: 20px;
-                transition: all 0.3s cubic-bezier(.25,.8,.25,1);
-                display: flex;
-                flex-direction: column;
-                justify-content: space-between;
-                width: 225px;
-                height: 225px;
-            }
-            
-            .name-content {
-                max-height: calc(100% - 20px);
-                overflow: hidden;
-                position: relative;
-                cursor: pointer;
-            }
-            
-            .drag-handle {
-              position: absolute;
-              top: 0;
-              left: 50%;
-              transform: translate(-50%);
-              z-index: 1;
-              cursor: pointer;
-            }
-        
-            .toolbar {
-                display: flex;
-                justify-content: flex-end;
-            }
-            
-            .tool {
-                display: inline-block;
-                margin-right: 10px;
-                position: relative;
-            }
-            
-            .tool .tooltip {
-                display: none;
-                position: absolute;
-                background-color: #555;
-                color: #fff;
-                text-align: center;
-                padding: 5px 10px;
-                border-radius: 6px;
-                z-index: 1;
-                top: 100%; 
-                left: 50%; 
-                transform: translateX(-50%);
-                writing-mode: vertical-lr;
-            }
-            
-            .board .toolbar {
-                position: absolute;
-                bottom: 0;
-                right: 0;
-                display: none;
-            }
-            
-            .sortable-chosen {
-              opacity: 0.5;
-              background-color: #f0f0f0;
-              transition: all 0.3s ease;
-            }
-            
-            .sortable-ghost {
-              opacity: 0;
-            }
-        </style>
-        
         <!-- ボード一覧 -->
         <div class="board-container" wire:sortable="updateBoardOrder" wire:sortable.options="{chosenClass: 'sortable-chosen', ghostClass: 'sortable-ghost'}">
             @foreach($boards as $board)
@@ -162,32 +203,36 @@
         if (element.matches('.board')) {
             element.addEventListener('mouseover', function() {
                 if (!isDragging) {
-                    this.style.boxShadow = '0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22)';
-                    this.querySelector('.toolbar').style.display = 'flex';
+                    this.style.boxShadow = '0 0 5px 1px rgba(0,0,0,0.3)';
+                    const toolbar = this.querySelector('.toolbar');
+                    toolbar.style.opacity = '1';
+                    toolbar.style.visibility = 'visible';
                 }
             });
-
+    
             element.addEventListener('mouseout', function() {
                 this.style.boxShadow = '';
-                this.querySelector('.toolbar').style.display = '';
+                const toolbar = this.querySelector('.toolbar');
+                toolbar.style.opacity = '0';
+                toolbar.style.visibility = 'hidden';
             });
         }
-
+    
         if (element.matches('.tool')) {
             element.addEventListener('mouseover', function() {
                 if (!isDragging) {
                     this.querySelector('.tooltip').style.display = 'block';
                 }
             });
-
+    
             element.addEventListener('mouseout', function() {
                 this.querySelector('.tooltip').style.display = '';
             });
         }
     }
-
+    
     document.querySelectorAll('.board, .tool').forEach(setupListeners);
-
+    
     const observer = new MutationObserver(function(mutations) {
         mutations.forEach(function(mutation) {
             mutation.addedNodes.forEach(function(node) {
