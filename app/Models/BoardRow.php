@@ -16,6 +16,7 @@ class BoardRow extends Model
         'quiz_answer',
         'difficulty_level_id',
         'status_id',
+        'order',
     ];
     
     public function board()

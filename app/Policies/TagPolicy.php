@@ -37,7 +37,7 @@ class TagPolicy
      */
     public function update(User $user, Tag $tag): bool
     {
-        //
+        return $user->id === $tag->board->user_id;
     }
 
     /**

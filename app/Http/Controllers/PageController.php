@@ -8,98 +8,43 @@ use Illuminate\Http\Request;
 
 class PageController extends Controller
 {
-    public function index()
-    {
-        $pages = auth()->user()->pages;
-        return view('pages.index', compact('pages'));
-    }
-
-    public function create()
-    {
-        $pages = auth()->user()->pages;
-        return view('pages.create', compact('pages'));
-    }
-
-    public function store(PageRequest $request)
-    {
-        $page = Page::create([
-            'title' => $request->title,
-            'content' => $request->content,
-            'user_id' => auth()->id(),
-        ]);
+    // public function index(Request $request)
+    // {
+    //     switch ($request->query('type')) {
+    //         case 'public':
+    //             $type = 'public';
+    //             $title = 'メモ（パブリック）';
+    //             $pages = auth()->user()->getPublicPages();
+    //             break;
+    //         case 'private':
+    //             $type = 'private';
+    //             $title = 'メモ（プライベート）';
+    //             $pages = auth()->user()->getPrivatePages();
+    //             break;
+    //         case 'favorite':
+    //             $type = 'favorite';
+    //             $title = 'メモ（お気に入り）';
+    //             $pages = auth()->user()->getFavoritePages();
+    //             break;
+    //         case 'all':
+    //             $type = 'all';
+    //             $title = 'メモ(全て)';
+    //             $pages = auth()->user()->getAllPages();
+    //             break;
+    //         case 'trashed':
+    //             $type = 'trashed';
+    //             $title = 'メモ(ゴミ箱)';
+    //             $pages = auth()->user()->getTrashedPages();
+    //             break;
+    //         default:
+    //             $type = 'all';
+    //             $title = 'メモ(全て)';
+    //             $pages = auth()->user()->getAllPages();
+    //             break;
+    //     }
         
-        session()->flash('message', '新しいページが作成されました');
+    //     $request->session()->put('type', $type);
         
-        return redirect()->route('pages.edit', compact('page'));
-    }
-    
-    public function show($page)
-    {
-        $page = Page::withTrashed()->findOrFail($page);
-        
-        $this->authorize('view', $page);
-        
-        $trashedPages = auth()->user()->pages()->onlyTrashed()->get();
-        
-        return view('pages.show', compact('page', 'trashedPages'));
-    }
-
-    public function edit(Page $page)
-    {
-        $this->authorize('update', $page);
-        
-        $pages = auth()->user()->pages;
-        return view('pages.edit', compact('pages', 'page'));
-    }
-
-    public function update(PageRequest $request, Page $page)
-    {
-        $this->authorize('update', $page);
-        
-        $page->update($request->validated());
-        
-        session()->flash('message', 'ページが更新されました');
-        return redirect()->route('pages.edit', compact('page'));
-    }
-    
-    public function destroy(Page $page)
-    {
-        $this->authorize('delete', $page);
-        
-        $page->delete();
-        
-        session()->flash('message', 'ページを削除しました');
-        return redirect(route('pages.index'));
-    }
-    
-    public function forceDelete($page)
-    {
-        $page = Page::withTrashed()->findOrFail($page);
-        
-        $this->authorize('delete', $page);
-        
-        $page->forceDelete();
-        
-        session()->flash('message', 'ページを完全に削除しました');
-        return redirect(route('pages.trashed'));
-    }
-    
-    public function restore($page)
-    {
-        $page = Page::withTrashed()->findOrFail($page);
-        
-        $this->authorize('delete', $page);
-        
-        $page->restore();
-        
-        session()->flash('message', 'ページを復元しました');
-        return redirect(route('pages.trashed'));
-    }
-    
-    public function trashed()
-    {
-        $trashedPages = auth()->user()->pages()->onlyTrashed()->get();
-            
-        return view('pages.trashed', compact('trashedPages'));
-    }
+    //     return view('pages.index', compact('pages', 'title'));
+    // }
 }

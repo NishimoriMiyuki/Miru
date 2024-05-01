@@ -53,7 +53,7 @@ class BoardPolicy
      */
     public function restore(User $user, Board $board): bool
     {
-        //
+        return $user->id === $board->user_id;
     }
 
     /**
@@ -61,6 +61,6 @@ class BoardPolicy
      */
     public function forceDelete(User $user, Board $board): bool
     {
-        //
+        return $user->id === $board->user_id;
     }
 }
