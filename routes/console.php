@@ -14,3 +14,9 @@ Schedule::call(function () {
     ->where('deleted_at', '<', now()->subDays(7))
     ->delete();
 })->daily();
+
+Schedule::call(function () {
+    DB::table('boards')
+    ->where('deleted_at', '<', now()->subDays(7))
+    ->delete();
+})->daily();

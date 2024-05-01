@@ -64,9 +64,9 @@
             
             <!-- ボード画面に切り替えボタン -->
             <a href="{{ route('boards.index') }}" class="items-center">
-                <span class="material-symbols-outlined">
+                <button class="material-symbols-outlined">
                     change_circle
-                </span>
+                </button>
             </a>
         </div>
         

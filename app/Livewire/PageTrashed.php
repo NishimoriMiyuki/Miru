@@ -29,6 +29,8 @@ class PageTrashed extends Component
         
         $this->isShow = false;
         $this->selectPage = null;
+        
+        $this->dispatch('toaster', [ 'message' => '削除しました' ]);
     }
     
     public function restore($pageId)
@@ -44,6 +46,8 @@ class PageTrashed extends Component
         
         $this->isShow = false;
         $this->selectPage = null;
+        
+        $this->dispatch('toaster', [ 'message' => '復元しました' ]);
     }
     
     public function show($pageId)

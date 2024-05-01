@@ -86,6 +86,11 @@ class User extends Authenticatable
         return $this->pages()->orderBy('order')->get();
     }
     
+    public function getTrashedBoards()
+    {
+        return $this->boards()->onlyTrashed()->orderBy('deleted_at', 'desc')->get();
+    }
+    
     public function getOrderBoards()
     {
         return $this->boards()->orderBy('order')->get();

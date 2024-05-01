@@ -55,7 +55,7 @@
                 x-transition:leave-end="opacity-0 transform -translate-x-full">
                 <div class="grid-container">
                     <a href="{{ route('boards.index') }}" class="grid-item">ボード</a>
-                    <a href="#" class="grid-item">ゴミ箱</a>
+                    <a href="{{ route('boards.trashed') }}" class="grid-item">ゴミ箱</a>
                 </div>
             </aside>
             

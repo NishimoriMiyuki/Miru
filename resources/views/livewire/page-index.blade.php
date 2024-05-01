@@ -1,5 +1,5 @@
 <x-slot name="header">
-    <x-page-header :title="'メモ'" />
+    <x-page-header />
 </x-slot>
     
 <div class="h-full container">
@@ -43,6 +43,7 @@
                 overflow: hidden;
                 position: relative;
                 cursor: pointer;
+                word-break: break-all;
             }
             
             .drag-handle {
@@ -109,7 +110,6 @@
             .sortable-chosen {
               opacity: 0.5;
               background-color: #f0f0f0;
-              border: 2px dashed #333;
               transition: all 0.3s ease;
             }
             

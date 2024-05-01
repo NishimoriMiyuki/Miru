@@ -349,6 +349,22 @@
             transform: translateX(-50%);
             writing-mode: vertical-lr;
         }
+        
+        .block {
+            display: block;
+            width: 100%;
+            padding: 0.5rem 1rem;
+            text-align: start;
+            font-size: 0.875rem;
+            line-height: 1.25rem;
+            color: #4a4a4a;
+            transition: all 0.15s ease-in-out;
+        }
+        
+        .block:hover, .block:focus {
+            background-color: #f2f2f2;
+            outline: none;
+        }
     </style>
     
     <!-- カンバンボード -->
@@ -504,15 +520,16 @@
                                         <div class="flex items-center">
                                             <x-dropdown align="right" width="48">
                                                 <x-slot name="trigger">
-                                                    <button type="button">
+                                                    <button type="button" class="tool">
                                                         <span class="material-symbols-outlined">
                                                             more_horiz
                                                         </span>
+                                                        <span class="tooltip">アクション</span>
                                                     </button>
                                                 </x-slot>
                                                     
                                                 <x-slot name="content">
-                                                    <button wire:click.prevent="deleteTag({{ $boardTag->id }})">
+                                                    <button wire:click.prevent="deleteTag({{ $boardTag->id }})" class="block">
                                                         タグを削除する
                                                     </button>
                                                 </x-slot>
@@ -566,15 +583,16 @@
                                         <div class="flex items-center">
                                             <x-dropdown align="right" width="48">
                                                 <x-slot name="trigger">
-                                                    <button type="button">
+                                                    <button type="button" class="tool">
                                                         <span class="material-symbols-outlined">
                                                             more_horiz
                                                         </span>
+                                                        <span class="tooltip">アクション</span>
                                                     </button>
                                                 </x-slot>
                                                     
                                                 <x-slot name="content">
-                                                    <button wire:click.prevent="deleteQuestion({{ $question->id }})">
+                                                    <button wire:click.prevent="deleteQuestion({{ $question->id }})" class="block">
                                                         質問例を削除する
                                                     </button>
                                                 </x-slot>
@@ -613,15 +631,16 @@
                                         <div class="flex items-center">
                                             <x-dropdown align="right" width="48">
                                                 <x-slot name="trigger">
-                                                    <button type="button">
+                                                    <button type="button" class="tool">
                                                         <span class="material-symbols-outlined">
                                                             more_horiz
                                                         </span>
+                                                        <span class="tooltip">アクション</span>
                                                     </button>
                                                 </x-slot>
                                                     
                                                 <x-slot name="content">
-                                                    <button wire:click.prevent="deleteComment({{ $comment->id }})">
+                                                    <button wire:click.prevent="deleteComment({{ $comment->id }})" class="block">
                                                         コメントを削除する
                                                     </button>
                                                 </x-slot>

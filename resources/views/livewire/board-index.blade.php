@@ -3,10 +3,6 @@
 </x-slot>
 
 <div class="h-full container">
-    <div wire:loading style="position: absolute; z-index: 9999;">
-        <div class="loader">Loading...</div>
-    </div>
-    
     <!-- ボード作成 -->
     <div>
         @if(!$isOpen)
@@ -110,7 +106,6 @@
             .sortable-chosen {
               opacity: 0.5;
               background-color: #f0f0f0;
-              border: 2px dashed #333;
               transition: all 0.3s ease;
             }
             
@@ -135,7 +130,7 @@
                     </div>
                     <div class="toolbar">
                         <div class="tool">
-                            <button wire:click="delete({{ $board }})">
+                            <button wire:click="delete({{ $board->id }})">
                                 <span class="material-symbols-outlined">
                                     delete
                                 </span>
@@ -150,3 +145,60 @@
         </div>
     @endif
 </div>
+
+@script
+<script>
+    let isDragging = false;
+
+    document.addEventListener('dragstart', function() {
+        isDragging = true;
+    });
+
+    document.addEventListener('dragend', function() {
+        isDragging = false;
+    });
+
+    function setupListeners(element) {
+        if (element.matches('.board')) {
+            element.addEventListener('mouseover', function() {
+                if (!isDragging) {
+                    this.style.boxShadow = '0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22)';
+                    this.querySelector('.toolbar').style.display = 'flex';
+                }
+            });
+
+            element.addEventListener('mouseout', function() {
+                this.style.boxShadow = '';
+                this.querySelector('.toolbar').style.display = '';
+            });
+        }
+
+        if (element.matches('.tool')) {
+            element.addEventListener('mouseover', function() {
+                if (!isDragging) {
+                    this.querySelector('.tooltip').style.display = 'block';
+                }
+            });
+
+            element.addEventListener('mouseout', function() {
+                this.querySelector('.tooltip').style.display = '';
+            });
+        }
+    }
+
+    document.querySelectorAll('.board, .tool').forEach(setupListeners);
+
+    const observer = new MutationObserver(function(mutations) {
+        mutations.forEach(function(mutation) {
+            mutation.addedNodes.forEach(function(node) {
+                if (node.nodeType === Node.ELEMENT_NODE) {
+                    setupListeners(node);
+                    node.querySelectorAll('.board, .tool').forEach(setupListeners);
+                }
+            });
+        });
+    });
+
+    observer.observe(document.body, { childList: true, subtree: true });
+</script>
+@endscript
