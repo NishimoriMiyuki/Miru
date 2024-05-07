@@ -54,7 +54,6 @@ return [
             'prefix_indexes' => true,
             'strict' => true,
             'engine' => null,
-            'sslmode' => env('DB_SSLMODE', 'prefer'),
             'options' => (env('MYSQL_SSL_CA_PATH', false)) ? [
                 PDO::MYSQL_ATTR_SSL_CA     => env('MYSQL_SSL_CA_PATH'),
             ] : [],
