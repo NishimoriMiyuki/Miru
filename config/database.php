@@ -54,9 +54,10 @@ return [
             'prefix_indexes' => true,
             'strict' => true,
             'engine' => null,
-            'options' => extension_loaded('pdo_mysql') ? array_filter([
-                PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
-            ]) : [],
+            'sslmode' => env('DB_SSLMODE', 'prefer'),
+            'options' => (env('MYSQL_SSL_CA_PATH', false)) ? [
+                PDO::MYSQL_ATTR_SSL_CA     => env('MYSQL_SSL_CA_PATH'),
+            ] : [],
         ],
 
         'mariadb' => [
