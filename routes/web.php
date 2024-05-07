@@ -7,6 +7,7 @@ use App\Livewire\BoardIndex;
 use App\Livewire\BoardEditor;
 use App\Livewire\BoardTrashed;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\DB;
 
 Route::get('/db-test', function () {
     try {
@@ -17,7 +18,7 @@ Route::get('/db-test', function () {
             die("Could not find the database. Please check your configuration.");
         }
     } catch (\Exception $e) {
-        die("Could not open connection to database server.  Please check your configuration.");
+        die("Could not open connection to database server. Error: " . $e->getMessage());
     }
 });
 
