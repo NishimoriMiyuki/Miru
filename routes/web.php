@@ -8,14 +8,15 @@ use App\Livewire\BoardEditor;
 use App\Livewire\BoardTrashed;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\DB;
+use App\Models\User;
 
 Route::get('/db-test', function () {
     try {
-        DB::connection()->getPdo();
-        if(DB::connection()->getDatabaseName()){
-            echo "Successfully connected to the DB: " . DB::connection()->getDatabaseName();
+        $user = User::first();
+        if($user){
+            echo "Successfully connected to the DB and fetched user: " . $user->name;
         }else{
-            die("Could not find the database. Please check your configuration.");
+            die("Could not find any users in the database. Please check your configuration.");
         }
     } catch (\Exception $e) {
         die("Could not open connection to database server. Error: " . $e->getMessage());
