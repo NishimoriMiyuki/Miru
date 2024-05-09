@@ -62,7 +62,7 @@
             </aside>
             
             <!-- ヘッダーに名前を表示 -->
-            <h1 class="text-xl font-bold">{{ $title ?? 'メモ' }}</h1>
+            <h2 class="font-semibold text-xl text-gray-800 leading-tight">{{ $title ?? 'メモ' }}</h1>
             
             <!-- ボード画面に切り替えボタン -->
             <a href="{{ route('boards.index') }}" class="items-center">
