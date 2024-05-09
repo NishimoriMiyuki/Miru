@@ -85,6 +85,7 @@ class PageEditor extends Component
     
     public function render()
     {
+        $this->dispatch('resize-textarea');
         return view('livewire.page-editor');
     }
 }

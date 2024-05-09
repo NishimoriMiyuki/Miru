@@ -68,13 +68,15 @@
                 background-color: #555;
                 color: #fff;
                 text-align: center;
-                padding: 5px 10px;
-                border-radius: 6px;
+                padding: 4px 4px;
+                border-radius: 4px;
                 z-index: 999;
                 top: 100%; 
                 left: 50%; 
                 transform: translateX(-50%);
                 writing-mode: vertical-lr;
+                line-height: 1;
+                font-size: 12px;
             }
             
             .page .toolbar {
@@ -101,8 +103,10 @@
             
             .modal-content {
                 background-color: white;
-                padding: 20px;
+                padding: 24px;
+                padding-bottom: 8px;
                 border-radius: 8px;
+                border: 1px solid #cccccc;
             }
             
             .sortable-chosen {
@@ -114,6 +118,23 @@
             .sortable-ghost {
               opacity: 0;
             }
+            
+            .drop-down-button {
+                display: block;
+                width: 100%;
+                padding: 0.5rem 1rem;
+                text-align: start;
+                font-size: 0.875rem;
+                line-height: 1.25rem;
+                color: #4a4a4a;
+                transition: all 0.15s ease-in-out;
+            }
+            
+            .drop-down-button:hover, .drop-down-button:focus {
+                background-color: #f2f2f2;
+                outline: none;
+            }
+        }
         </style>
         
         <div class="page-container" wire:sortable="updatePageOrder" wire:sortable.options="{chosenClass: 'sortable-chosen', ghostClass: 'sortable-ghost'}">
@@ -131,16 +152,6 @@
                         </a>
                     </div>
                     <div class="toolbar text-gray-300">
-                        <div class="tool">
-                            <button wire:click="delete({{ $page }})">
-                                <span class="material-symbols-outlined">
-                                    delete
-                                </span>
-                            </button>
-                            <div class="tooltip">
-                                削除
-                            </div>
-                        </div>
                         <div class="tool">
                             <button wire:click="toggleFavorite({{ $page }})">
                                 @if($page->is_favorite)
@@ -181,6 +192,22 @@
                                 @endif
                             </div>
                         </div>
+                        <x-dropdown align="right" width="48">
+                            <x-slot name="trigger">
+                                <button type="button" class="tool">
+                                    <span class="material-symbols-outlined">
+                                        more_horiz
+                                    </span>
+                                    <span class="tooltip">アクション</span>
+                                </button>
+                            </x-slot>
+                                
+                            <x-slot name="content">
+                                <button wire:click="delete({{ $page }})" style="font-size: 14px;" class="text-gray-600 drop-down-button">
+                                    メモを削除する
+                                </button>
+                            </x-slot>
+                        </x-dropdown>
                     </div>
                 </div>
             @endforeach
