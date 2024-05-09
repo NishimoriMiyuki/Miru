@@ -1,5 +1,5 @@
 <x-slot name="header">
-    <x-board-header :title="'ボード（ゴミ箱）'" />
+    <x-board-header />
 </x-slot>
 
 <x-slot name="alert">
