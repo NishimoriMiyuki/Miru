@@ -1,5 +1,5 @@
 <x-slot name="header">
-    <x-page-header :title="'メモ（ゴミ箱）'" />
+    <x-page-header />
 </x-slot>
 
 <x-slot name="alert">

@@ -57,19 +57,13 @@
                 x-transition:leave-end="opacity-0 transform -translate-x-full">
                 <div class="grid-container">
                     <a href="{{ route('pages.index') }}" class="grid-item">メモ</a>
+                    <a href="{{ route('boards.index') }}" class="grid-item">ボード</a>
                     <a href="{{ route('pages.trashed') }}" class="grid-item">ゴミ箱</a>
                 </div>
             </aside>
             
             <!-- ヘッダーに名前を表示 -->
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">{{ $title ?? 'メモ' }}</h1>
-            
-            <!-- ボード画面に切り替えボタン -->
-            <a href="{{ route('boards.index') }}" class="items-center">
-                <button class="material-symbols-outlined">
-                    change_circle
-                </button>
-            </a>
+            <h1 class="text-xl font-bold">{{ $title ?? 'メモ' }}</h1>
         </div>
         
         <!-- ユーザーの設定メニュー -->
