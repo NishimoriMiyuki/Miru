@@ -1,5 +1,4 @@
 <div class="flex flex-col" style="width: 500px; max-width: 100vw;">
-    
     <style>
         textarea::-webkit-scrollbar {
             width: 10px;
@@ -17,6 +16,38 @@
             background: #9e9e9e;
         }
     </style>
+    
+    <div class="flex justify-end">
+        <x-dropdown align="right" width="48">
+            <x-slot name="trigger">
+                <button type="button" class="tool">
+                    <span class="material-symbols-outlined">
+                        arrow_drop_down
+                    </span>
+                </button>
+            </x-slot>
+                
+            <x-slot name="content">
+                <button wire:click="delete" style="font-size: 14px;" class="text-gray-600 drop-down-button">
+                    メモを削除する
+                </button>
+                <button wire:click="toggleFavorite" style="font-size: 14px;" class="text-gray-600 drop-down-button">
+                    @if($page->is_favorite)
+                        お気に入り解除
+                    @else
+                        お気に入り登録
+                    @endif
+                </button>
+                <button wire:click="togglePublic" style="font-size: 14px;" class="text-gray-600 drop-down-button" wire:confirm="{{ $page->is_public ? '非公開にしますか？' : '公開しますか？' }}">
+                    @if($page->is_public)
+                        非公開にする
+                    @else
+                        公開する
+                    @endif
+                </button>
+            </x-slot>
+        </x-dropdown>
+    </div>
     
     <textarea 
         wire:ignore 
@@ -46,64 +77,17 @@
     </div>
     
     <div style="display: flex; justify-content: space-between;">
-        
-        <div class="toolbar text-gray-300">
-            <div class="tool">
-                <button wire:click="toggleFavorite">
-                    @if($page->is_favorite)
-                        <span class="material-symbols-outlined text-pink-400">
-                            heart_check
-                        </span>
-                    @else
-                        <span class="material-symbols-outlined">
-                            favorite
-                        </span>
-                    @endif
-                </button>
-                <div class="tooltip">
-                    @if($page->is_favorite)
-                        お気に入り解除
-                    @else
-                        お気に入り登録
-                    @endif
+        <div style="font-size: 12px; display: flex; justify-content: space-between; gap: 2px;">
+            @if($page->is_favorite)
+                <div class="header-text">
+                    お気に入り
                 </div>
-            </div>
-            <div class="tool">
-                <button wire:click="togglePublic" wire:confirm="{{ $page->is_public ? '非公開にしますか？':'公開しますか？' }}">
-                    @if($page->is_public)
-                        <span class="material-symbols-outlined text-blue-400">
-                            public
-                        </span>
-                    @else
-                        <span class="material-symbols-outlined">
-                            public_off
-                        </span>
-                    @endif
-                </button>
-                <div class="tooltip">
-                    @if($page->is_public)
-                        非公開にする
-                    @else
-                        公開する
-                    @endif
+            @endif
+            @if($page->is_public)
+                <div class="header-text">
+                    公開中
                 </div>
-            </div>
-            <x-dropdown align="right" width="48">
-                <x-slot name="trigger">
-                    <button type="button" class="tool">
-                        <span class="material-symbols-outlined">
-                            more_horiz
-                        </span>
-                        <span class="tooltip">アクション</span>
-                    </button>
-                </x-slot>
-                    
-                <x-slot name="content">
-                    <button wire:click="delete" style="font-size: 14px;" class="drop-down-button">
-                        メモを削除する
-                    </button>
-                </x-slot>
-            </x-dropdown>
+            @endif
         </div>
         
         <button wire:click="close" class="tool-button" style="font-size: 14px;">
