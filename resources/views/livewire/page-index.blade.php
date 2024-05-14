@@ -113,8 +113,8 @@
         
         <div class="page-container" wire:sortable="updatePageOrder" wire:sortable.options="{chosenClass: 'sortable-chosen', ghostClass: 'sortable-ghost'}">
             @foreach($pages as $page)
-                <div class="page" wire:sortable.handle wire:sortable.item="{{ $page->id }}" wire:key="page-{{ $page->id }}">
-                    <div class="page-header">
+                <div class="page" wire:sortable.item="{{ $page->id }}" wire:key="page-{{ $page->id }}">
+                    <div class="page-header" wire:sortable.handle>
                         <div style="font-size: 12px; display: flex; justify-content: space-between; gap: 2px;">
                             @if($page->is_favorite)
                                 <div class="header-text">
@@ -202,7 +202,10 @@
             });
         }
     }
-
-    document.querySelectorAll('.page').forEach(setupListeners);
+    
+    // 呼ばなくて良い時にも呼ばれているので処理を変える必要がある
+    Livewire.hook('element.init', ({ component, el }) => {
+        document.querySelectorAll('.page').forEach(setupListeners);
+    })
 </script>
 @endscript
