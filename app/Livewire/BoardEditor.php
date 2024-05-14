@@ -356,4 +356,31 @@ class BoardEditor extends Component
             return $comment->id === $id;
         });
     }
+    
+    public function deleteBoardRow($boardRowId)
+    {
+        $matchingBoardRow = null;
+        $matchingStatusId = null;
+        $matchingBoardRowKey = null;
+    
+        foreach ($this->boardRows as $statusId => $boardRows) {
+            foreach ($boardRows as $key => $boardRow) {
+                if ($boardRow['id'] == $boardRowId) {
+                    $matchingBoardRow = $boardRow;
+                    $matchingStatusId = $statusId;
+                    $matchingBoardRowKey = $key;
+                    break 2;
+                }
+            }
+        }
+        
+        if($matchingBoardRow === null)
+        {
+            return;
+        }
+        
+        $this->authorize('delete', $matchingBoardRow);
+        $matchingBoardRow->delete();
+        unset($this->boardRows[$matchingStatusId][$matchingBoardRowKey]);
+    }
 }
