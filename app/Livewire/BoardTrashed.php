@@ -14,6 +14,18 @@ class BoardTrashed extends Component
     {
         $this->boards = auth()->user()->getTrashedBoards();
     }
+
+    public function emptyTrash()
+    {
+        foreach ($this->boards as $board) {
+            $this->authorize('forceDelete', $board);
+            $board->forceDelete();
+        }
+        
+        $this->boards = auth()->user()->getTrashedBoards();
+        
+        $this->dispatch('toaster', [ 'message' => '全てのボードを削除しました' ]);
+    }
     
     public function forceDelete($id)
     {
