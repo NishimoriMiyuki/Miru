@@ -2,7 +2,7 @@
     <x-board-header :title="'ボード'" />
 </x-slot>
 
-<div class="h-full">
+<div class="content">
     
     <style>
         [x-cloak] {
@@ -365,23 +365,69 @@
             background-color: #f2f2f2;
             outline: none;
         }
+        
+        .drop-down-button {
+            display: block;
+            width: 100%;
+            padding: 0.5rem 1rem;
+            text-align: start;
+            font-size: 0.875rem;
+            line-height: 1.25rem;
+            color: #4a4a4a;
+            transition: all 0.15s ease-in-out;
+        }
+        
+        .drop-down-button:hover, .drop-down-button:focus {
+            background-color: #f2f2f2;
+            outline: none;
+        }
+        
+        .status-circle {
+          display: inline-block;
+          width: 12px;
+          height: 12px;
+          border-radius: 50%;
+          margin-right: 5px;
+        }
+        
+        .status-type {
+            text-align: left;
+        }
     </style>
     
     <!-- カンバンボード -->
     <div wire:sortable-group="updateTaskOrder" class="status-container">
         @foreach ($statuses as $status)
             <div wire:key="status-{{ $status->id }}" class="status-item">
-                <h4>{{ $status->type }}</h4>
+                <div class="status-type" style="font-weight: bold;">
+                  <span class="status-circle" style="background-color: {{ $status->color }};"></span>
+                  {{ $status->type }}
+                  ({{ count($boardRows[$status->id]) }})
+                </div>
     
                 <ul wire:sortable-group.item-group="{{ $status->id }}" wire:sortable-group.options="{ animation: 100 }">
                     @foreach ($boardRows[$status->id] as $boardRow)
-                        <li wire:sortable-group.item="{{ $boardRow->id }}" wire:key="task-{{ $boardRow->id }}">
+                        <li wire:sortable-group.item="{{ $boardRow->id }}" wire:key="task-{{ $boardRow->id }}" wire:sortable-group.handle style="cursor: move;">
                             <button wire:click="editOpen({{ $boardRow->id }})">{{ $boardRow->title }}</button>
-                            <button wire:sortable-group.handle>drag</button>
+                            <x-dropdown align="right" width="48">
+                                <x-slot name="trigger">
+                                    <button type="button">
+                                        <span class="material-symbols-outlined">
+                                            arrow_drop_down
+                                        </span>
+                                    </button>
+                                </x-slot>
+                                    
+                                <x-slot name="content">
+                                    <button wire:confirm="問題は完全に削除されます。よろしいですか？" wire:click="deleteBoardRow({{ $boardRow->id }})" style="font-size: 14px;" class="text-gray-600 drop-down-button">
+                                        問題を削除する
+                                    </button>
+                                </x-slot>
+                            </x-dropdown>
                         </li>
                     @endforeach
                 </ul>
-                <button wire:click="createBoardRow({{ $status->id }})">＋新規</button>
+                <button wire:click="createBoardRow({{ $status->id }})" style="text-align: left; display: block;">＋新規</button>
             </div>
         @endforeach
     </div>

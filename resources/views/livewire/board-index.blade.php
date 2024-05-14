@@ -177,6 +177,7 @@
                     <div class="text-content">
                         <a href="{{ route('boards.edit', ['board' => $board]) }}">
                             <p>{{ \Illuminate\Support\Str::limit($board->name, 20) }}</p>
+                            <p style="font-size: 12px; text-align: right;">問題数：{{ $board->boardRows->count() }}</p>
                         </a>
                     </div>
                 </div>
