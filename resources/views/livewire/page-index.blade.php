@@ -6,9 +6,9 @@
     <livewire:page-create />
     
     @if($pages->isEmpty())
-    <div style="padding: 50px 0; font-size: 22px;">
-        <p>メモがありません</p>
-    </div>
+        <div style="padding: 50px 0; font-size: 22px;">
+            <p>メモがありません</p>
+        </div>
     @else
         <style>
             .page-container {
@@ -129,7 +129,7 @@
                         </div>
                         <x-dropdown align="right" width="48">
                             <x-slot name="trigger">
-                                <button type="button" class="tool">
+                                <button type="button">
                                     <span class="material-symbols-outlined">
                                         arrow_drop_down
                                     </span>
@@ -204,10 +204,5 @@
     }
 
     document.querySelectorAll('.page').forEach(setupListeners);
-    
-    
-    $wire.on('create-page', (event) => {
-        
-    });
 </script>
 @endscript

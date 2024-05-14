@@ -1,18 +1,18 @@
 <x-slot name="header">
-    <x-board-header :title="'ボード'" />
+    <x-board-header />
 </x-slot>
 
-<div class="h-full container">
+<div class="container">
     <style>
         .board-container {
           display: grid;
-          grid-template-columns: repeat(auto-fill, minmax(225px, 1fr));
-          gap: 20px;
+          grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+          gap: 8px 4px;
           padding: 50px 0;
         }
         
         .board-container > * {
-            flex: 0 0 225px;
+            flex: 0 0 240px;
         }
         
         .board {
@@ -20,64 +20,31 @@
             background-color: #fff;
             border-radius: 8px;
             border: 1px solid #D1D5DB;
-            padding: 20px;
+            padding: 8px;
             transition: all 0.3s cubic-bezier(.25,.8,.25,1);
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            width: 225px;
-            height: 225px;
+            minmax-width: 240px;
+            height: 100px;
         }
         
-        .name-content {
+        .board:hover {
+            z-index: 999;
+        }
+        
+        .board-header {
+            display: flex;
+            justify-content: space-between;
+            cursor: move;
+        }
+        
+        .text-content {
+            flex-grow: 1;
             max-height: calc(100% - 20px);
             overflow: hidden;
             position: relative;
-            cursor: pointer;
-        }
-        
-        .drag-handle {
-          position: absolute;
-          top: 0;
-          left: 50%;
-          transform: translate(-50%);
-          z-index: 1;
-          cursor: pointer;
-        }
-    
-        .toolbar {
-            display: flex;
-            justify-content: flex-end;
-        }
-        
-        .tool {
-            display: inline-block;
-            margin-right: 10px;
-            position: relative;
-        }
-        
-        .tool .tooltip {
-            display: none;
-            position: absolute;
-            background-color: #555;
-            color: #fff;
-            text-align: center;
-            padding: 5px 10px;
-            border-radius: 6px;
-            z-index: 1;
-            top: 100%; 
-            left: 50%;
-            transform: translateX(-50%);
-            writing-mode: vertical-lr;
-        }
-        
-        .board .toolbar {
-            opacity: 0;
-            visibility: hidden;
-            transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
-            position: absolute;
-            bottom: 0;
-            right: 0;
+            word-break: break-all;
         }
         
         .sortable-chosen {
@@ -134,6 +101,32 @@
         .tool-button:hover {
             background-color: #f2f2f2;
         }
+
+        .drop-down-button {
+            display: block;
+            width: 100%;
+            padding: 0.5rem 1rem;
+            text-align: start;
+            font-size: 0.875rem;
+            line-height: 1.25rem;
+            color: #4a4a4a;
+            transition: all 0.15s ease-in-out;
+        }
+        
+        .drop-down-button:hover, .drop-down-button:focus {
+            background-color: #f2f2f2;
+            outline: none;
+        }
+        
+        .header-text {
+            border: 1px solid #D1D5DB;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 18px;
+            border-radius: 8px;
+            padding: 4px;
+        }
     </style>
     
     <!-- ボード作成 -->
@@ -144,7 +137,7 @@
             <div class="create-edit">
                 @error('name') <span class="error text-red-500 font-bold">{{ $message }}</span> @enderror
                 <div>
-                    <textarea wire:model="name" maxlength="255" placeholder="ボード名を入力..." class="create-textarea" autofocus></textarea>
+                    <textarea name="name" wire:model="name" maxlength="255" placeholder="ボード名を入力..." class="create-textarea" autofocus></textarea>
                 </div>
                 <button class="tool-button" wire:click="create">作成</button>
                 <button class="tool-button" wire:click="toggleIsOpen(false)">閉じる</button>
@@ -153,33 +146,38 @@
     </div>
     
     @if($boards->isEmpty())
-        <p>ボードがありません。</p>
+        <div style="padding: 50px 0; font-size: 22px;">
+            <p>ボードがありません</p>
+        </div>
     @else
         <!-- ボード一覧 -->
         <div class="board-container" wire:sortable="updateBoardOrder" wire:sortable.options="{chosenClass: 'sortable-chosen', ghostClass: 'sortable-ghost'}">
             @foreach($boards as $board)
                 <div class="board" wire:sortable.item="{{ $board->id }}" wire:key="board-{{ $board->id }}">
-                    <div class="drag-handle" wire:sortable.handle>
-                        <span class="material-symbols-outlined">
-                        drag_handle
-                        </span>
-                    </div> 
+                    <div class="board-header" wire:sortable.handle>
+                        <div style="font-size: 12px; display: flex; justify-content: space-between; gap: 2px;">
+                            <!-- スペース確保 -->
+                        </div>
+                        <x-dropdown align="right" width="48">
+                            <x-slot name="trigger">
+                                <button type="button">
+                                    <span class="material-symbols-outlined">
+                                        arrow_drop_down
+                                    </span>
+                                </button>
+                            </x-slot>
+                                
+                            <x-slot name="content">
+                                <button wire:click="delete({{ $board->id }})" style="font-size: 14px;" class="text-gray-600 drop-down-button">
+                                    ボードを削除する
+                                </button>
+                            </x-slot>
+                        </x-dropdown>
+                    </div>
                     <div class="text-content">
                         <a href="{{ route('boards.edit', ['board' => $board]) }}">
                             <p>{{ \Illuminate\Support\Str::limit($board->name, 20) }}</p>
                         </a>
-                    </div>
-                    <div class="toolbar">
-                        <div class="tool">
-                            <button wire:click="delete({{ $board->id }})">
-                                <span class="material-symbols-outlined">
-                                    delete
-                                </span>
-                            </button>
-                            <div class="tooltip">
-                                削除
-                            </div>
-                        </div>
                     </div>
                 </div>
             @endforeach
@@ -204,46 +202,15 @@
             element.addEventListener('mouseover', function() {
                 if (!isDragging) {
                     this.style.boxShadow = '0 0 5px 1px rgba(0,0,0,0.3)';
-                    const toolbar = this.querySelector('.toolbar');
-                    toolbar.style.opacity = '1';
-                    toolbar.style.visibility = 'visible';
                 }
             });
-    
+
             element.addEventListener('mouseout', function() {
                 this.style.boxShadow = '';
-                const toolbar = this.querySelector('.toolbar');
-                toolbar.style.opacity = '0';
-                toolbar.style.visibility = 'hidden';
-            });
-        }
-    
-        if (element.matches('.tool')) {
-            element.addEventListener('mouseover', function() {
-                if (!isDragging) {
-                    this.querySelector('.tooltip').style.display = 'block';
-                }
-            });
-    
-            element.addEventListener('mouseout', function() {
-                this.querySelector('.tooltip').style.display = '';
             });
         }
     }
-    
-    document.querySelectorAll('.board, .tool').forEach(setupListeners);
-    
-    const observer = new MutationObserver(function(mutations) {
-        mutations.forEach(function(mutation) {
-            mutation.addedNodes.forEach(function(node) {
-                if (node.nodeType === Node.ELEMENT_NODE) {
-                    setupListeners(node);
-                    node.querySelectorAll('.board, .tool').forEach(setupListeners);
-                }
-            });
-        });
-    });
 
-    observer.observe(document.body, { childList: true, subtree: true });
+    document.querySelectorAll('.board').forEach(setupListeners);
 </script>
 @endscript
