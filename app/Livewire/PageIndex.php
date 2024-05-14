@@ -69,13 +69,22 @@ class PageIndex extends Component
     #[On('create-page')]
     public function addPage($page)
     {
-        $this->pages->prepend(auth()->user()->pages()->find($page));
+        $newPage = auth()->user()->pages()->find($page);
+        
+        $this->pages->prepend($newPage);
+    
+        // 新しい順序を作成
+        $order = $this->pages->map(function ($page, $index) {
+            return ['value' => $page->id, 'order' => $index + 1];
+        })->toArray();
+    
+        $this->updatePageOrder($order);
     }
     
-    public function toggleFavorite(Page $page)
+    public function toggleFavorite($isFavorite, Page $page)
     {
         $this->authorize('update', $page);
-        $page->is_favorite = !$page->is_favorite;
+        $page->is_favorite = $isFavorite;
         $page->save();
     
         $this->pages = $this->pages->map(function ($p) use ($page) {
@@ -83,14 +92,14 @@ class PageIndex extends Component
         });
     }
     
-    public function togglePublic(Page $page)
+    public function togglePublic($isPublic, Page $page)
     {
         $this->authorize('update', $page);
-        $page->is_public = !$page->is_public;
+        $page->is_public = $isPublic;
         $page->save();
         
         $this->pages = $this->pages->map(function ($p) use ($page) {
-        return $p->id === $page->id ? $page : $p;
+            return $p->id === $page->id ? $page->fresh() : $p;
         });
     }
     

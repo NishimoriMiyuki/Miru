@@ -16,6 +16,18 @@ class PageTrashed extends Component
         $this->pages = auth()->user()->getTrashedPages();
     }
     
+    public function emptyTrash()
+    {
+        foreach ($this->pages as $page) {
+            $this->authorize('forceDelete', $page);
+            $page->forceDelete();
+        }
+        
+        $this->pages = auth()->user()->getTrashedPages();
+        
+        $this->dispatch('toaster', [ 'message' => '全てのメモを削除しました' ]);
+    }
+    
     public function forceDelete($pageId)
     {
         $page = Page::onlyTrashed()->where('id', $pageId)->firstOrFail();
