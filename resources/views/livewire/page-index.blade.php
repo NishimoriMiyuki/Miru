@@ -6,7 +6,9 @@
     <livewire:page-create />
     
     @if($pages->isEmpty())
-        <p>メモがありません。</p>
+    <div style="padding: 50px 0; font-size: 22px;">
+        <p>メモがありません</p>
+    </div>
     @else
         <style>
             .page-container {
@@ -107,7 +109,6 @@
                 border-radius: 8px;
                 padding: 4px;
             }
-        }
         </style>
         
         <div class="page-container" wire:sortable="updatePageOrder" wire:sortable.options="{chosenClass: 'sortable-chosen', ghostClass: 'sortable-ghost'}">
@@ -139,19 +140,19 @@
                                 <button wire:click="delete({{ $page }})" style="font-size: 14px;" class="text-gray-600 drop-down-button">
                                     メモを削除する
                                 </button>
-                                <button wire:click="toggleFavorite({{ $page }})" style="font-size: 14px;" class="text-gray-600 drop-down-button">
-                                    @if($page->is_favorite)
-                                        お気に入り解除
-                                    @else
-                                        お気に入り登録
-                                    @endif
+                                <button
+                                    style="font-size: 14px;" 
+                                    class="text-gray-600 drop-down-button" 
+                                    x-data="{ isFavorite: {{ $page->is_favorite }} }"
+                                    x-text="isFavorite ? 'お気に入り解除' : 'お気に入り登録'"
+                                    x-on:click="$wire.toggleFavorite(!isFavorite, {{ $page }}); isFavorite = !isFavorite;">
                                 </button>
-                                <button wire:click="togglePublic({{ $page }})" style="font-size: 14px;" class="text-gray-600 drop-down-button" wire:confirm="{{ $page->is_public ? '非公開にしますか？' : '公開しますか？' }}">
-                                    @if($page->is_public)
-                                        非公開にする
-                                    @else
-                                        公開する
-                                    @endif
+                                <button
+                                    style="font-size: 14px;" 
+                                    class="text-gray-600 drop-down-button" 
+                                    x-data="{ isPublic: {{ $page->is_public }} }"
+                                    x-text="isPublic ? '非公開にする' : '公開する'"
+                                    x-on:click="if (confirm(isPublic ? '非公開にしますか？' : '公開しますか？')) { $wire.togglePublic(!isPublic, {{ $page }}); isPublic = !isPublic; }">
                                 </button>
                             </x-slot>
                         </x-dropdown>
@@ -203,5 +204,10 @@
     }
 
     document.querySelectorAll('.page').forEach(setupListeners);
+    
+    
+    $wire.on('create-page', (event) => {
+        
+    });
 </script>
 @endscript

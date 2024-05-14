@@ -94,7 +94,7 @@ class PageCreate extends Component
             <div class="create-edit">
                 @error('content') <span class="error text-red-500 font-bold">{{ $message }}</span> @enderror
                 <div>
-                    <textarea wire:model="content" rows="3" maxlength="2000" placeholder="メモを入力..." class="create-textarea" autofocus></textarea>
+                    <textarea name="content" wire:model="content" rows="3" maxlength="2000" placeholder="メモを入力..." class="create-textarea" autofocus></textarea>
                 </div>
                 <button class="tool-button" wire:click="create">作成</button>
                 <button class="tool-button" wire:click="toggleIsOpen(false)">閉じる</button>

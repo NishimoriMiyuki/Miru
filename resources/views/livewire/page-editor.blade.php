@@ -49,7 +49,8 @@
         </x-dropdown>
     </div>
     
-    <textarea 
+    <textarea
+        name="content"
         wire:ignore 
         wire:model.live.debounce.500ms="content"
         x-init="$nextTick(() => resize())"

@@ -1,113 +1,151 @@
 <x-slot name="header">
     <x-page-header />
 </x-slot>
-
-<x-slot name="alert">
-    ゴミ箱内のメモは 7 日後に削除されます。
-</x-slot>
     
-<div class="h-full container">
+<div class="container">
     @if($pages->isEmpty())
-        <p>ゴミ箱にはメモがありません。</p>
+    <div style="padding: 50px 0; font-size: 22px;">
+        <p>ゴミ箱にメモがありません</p>
+    </div>
     @else
         <style>
+            textarea::-webkit-scrollbar {
+                width: 10px;
+            }
+            
+            textarea::-webkit-scrollbar-track {
+                background: transparent;
+            }
+            
+            textarea::-webkit-scrollbar-thumb {
+                background: #b8b8b8;
+            }
+            
+            textarea::-webkit-scrollbar-thumb:hover {
+                background: #9e9e9e;
+            }
+            
             .page-container {
               display: grid;
-              grid-template-columns: repeat(auto-fill, minmax(225px, 1fr));
-              gap: 20px;
+              grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+              gap: 8px 4px;
               padding: 50px 0;
             }
             
             .page-container > * {
-                flex: 0 0 225px;
+                flex: 0 0 240px;
             }
             
             .page {
                 position: relative;
                 background-color: #fff;
                 border-radius: 8px;
-                box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
-                padding: 20px;
+                border: 1px solid #D1D5DB;
+                padding: 8px;
                 transition: all 0.3s cubic-bezier(.25,.8,.25,1);
                 display: flex;
                 flex-direction: column;
                 justify-content: space-between;
-                width: 225px;
-                height: 225px;
+                minmax-width: 240px;
+                height: 100px;
             }
             
+            .page:hover {
+                z-index: 999;
+                box-shadow: 0 0 5px 1px rgba(0,0,0,0.3);
+            }
+                        
+            .page-header {
+                display: flex;
+                justify-content: flex-end;
+            }
+        
             .text-content {
+                flex-grow: 1;
                 max-height: calc(100% - 20px);
                 overflow: hidden;
                 position: relative;
                 cursor: pointer;
                 word-break: break-all;
             }
-        
-            .toolbar {
+            
+            .drop-down-button {
+                display: block;
+                width: 100%;
+                padding: 0.5rem 1rem;
+                text-align: start;
+                font-size: 0.875rem;
+                line-height: 1.25rem;
+                color: #4a4a4a;
+                transition: all 0.15s ease-in-out;
+            }
+            
+            .drop-down-button:hover, .drop-down-button:focus {
+                background-color: #f2f2f2;
+                outline: none;
+            }
+            
+            .modal-overlay {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background-color: rgba(0,0,0,0.5);
                 display: flex;
-                justify-content: flex-end;
+                justify-content: center;
+                align-items: center;
+                z-index: 9999;
             }
             
-            .tool {
-                display: inline-block;
-                margin-right: 10px;
-                position: relative;
+            .modal-content {
+                background-color: white;
+                padding: 8px 24px;
+                border-radius: 8px;
+                border: 1px solid #cccccc;
             }
             
-            .tool .tooltip {
-                display: none;
-                position: absolute;
-                background-color: #555;
-                color: #fff;
-                text-align: center;
-                padding: 5px 10px;
-                border-radius: 6px;
-                z-index: 1;
-                top: 100%; 
-                left: 50%; 
-                transform: translateX(-50%);
-                writing-mode: vertical-lr;
+            .tool-button {
+                padding: 4px 24px;
+                border-radius: 5px;
             }
             
-            .page .toolbar {
-                position: absolute;
-                bottom: 0;
-                right: 0;
-                display: none;
+            .tool-button:hover {
+                background-color: #f2f2f2;
             }
         </style>
         
+        <div>
+            <button wire:click="emptyTrash" class="tool-button" style="color: #1a73e8; font-size: 14px;" wire:confirm="ゴミ箱を空にしますか？ゴミ箱内のメモはすべて完全に削除されます。">ゴミ箱を空にする</button>
+        </div>
         <div class="page-container">
             @foreach($pages as $page)
-                <div class="page">
+                <div class="page" wire:key="page-{{ $page->id }}">
+                    <div class="page-header">
+                        <x-dropdown align="right" width="48">
+                            <x-slot name="trigger">
+                                <button type="button" class="tool">
+                                    <span class="material-symbols-outlined">
+                                        arrow_drop_down
+                                    </span>
+                                </button>
+                            </x-slot>
+                                
+                            <x-slot name="content">
+                                <button wire:click="restore({{ $page->id }})" style="font-size: 14px;" class="text-gray-600 drop-down-button">
+                                    メモを復元
+                                </button>
+                                <button wire:click="forceDelete({{ $page->id }})" wire:confirm="永久に削除しますか？" style="font-size: 14px;" class="text-gray-600 drop-down-button">
+                                    永久に削除
+                                </button>
+                            </x-slot>
+                        </x-dropdown>
+                    </div>
                     <div class="text-content">
-                        <a wire:click="show({{ $page->id }})">
+                        <a wire:click="show({{ $page }})">
                             <p class="font-bold">{{ $page->firstLine }}</p>
                             <p>{{ $page->restOfContent }}</p>
                         </a>
-                    </div>
-                    <div class="toolbar text-gray-300">
-                        <div class="tool">
-                            <button wire:click="forceDelete({{ $page->id }})" wire:confirm="永久に削除しますか？">
-                                <span class="material-symbols-outlined">
-                                    delete_forever
-                                </span>
-                            </button>
-                            <div class="tooltip">
-                                削除
-                            </div>
-                        </div>
-                        <div class="tool">
-                            <button wire:click="restore({{ $page->id }})">
-                                <span class="material-symbols-outlined">
-                                    restore_from_trash
-                                    </span>
-                            </button>
-                            <div class="tooltip">
-                                復元
-                            </div>
-                        </div>
                     </div>
                 </div>
             @endforeach
@@ -115,67 +153,56 @@
     @endif
     
     @if($isShow)
-    <div style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); display: flex; justify-content: center; align-items: center; z-index: 9999;">
-        <div style="background-color: white; padding: 20px; border-radius: 8px;">
-            <div class="flex flex-col" style="width: 1000px; height: 800px;">
-                <textarea name="content" rows="30" placeholder="内容を入力" class="border-transparent focus:border-transparent focus:ring-0 focus:outline-none resize-none font-bold resize-none" readonly>{{ $selectPage->content }}</textarea>
-                        
-                <div class="bg-white pt-2">
-                    編集日時: {{ $page->updated_at }}
+    <div class="modal-overlay">
+        <div class="modal-content">
+            <div class="flex flex-col" style="width: 500px; max-width: 100vw;">
+                <div class="flex justify-end">
+                    <x-dropdown align="right" width="48">
+                        <x-slot name="trigger">
+                            <button type="button" class="tool">
+                                <span class="material-symbols-outlined">
+                                    arrow_drop_down
+                                </span>
+                            </button>
+                        </x-slot>
+                            
+                        <x-slot name="content">
+                            <button wire:click="restore({{ $selectPage->id }})" style="font-size: 14px;" class="text-gray-600 drop-down-button">
+                                メモを復元
+                            </button>
+                            <button wire:click="forceDelete({{ $selectPage->id }})" wire:confirm="永久に削除しますか？" style="font-size: 14px;" class="text-gray-600 drop-down-button">
+                                メモを永久削除
+                            </button>
+                        </x-slot>
+                    </x-dropdown>
+                    
                 </div>
                 
-                <div class="toolbar">
-                    <div class="tool">
-                        <button wire:click="forceDelete({{ $selectPage->id }})" wire:confirm="永久に削除しますか？">
-                            <span class="material-symbols-outlined">
-                                delete_forever
-                            </span>
-                        </button>
-                        <div class="tooltip">
-                            削除
-                        </div>
-                    </div>
-                    <div class="tool">
-                        <button wire:click="restore({{ $selectPage->id }})">
-                            <span class="material-symbols-outlined">
-                                restore_from_trash
-                            </span>
-                        </button>
-                        <div class="tooltip">
-                            復元
-                        </div>
-                    </div>
+                <textarea 
+                    name="content"
+                    x-init="$nextTick(() => resize())"
+                    x-data="{
+                                resize() {
+                                    $el.style.height = '0px';
+                                    $el.style.height = $el.scrollHeight + 'px';
+                                }
+                            }"
+                    placeholder="内容を入力" 
+                    class="border-0 border-transparent focus:border-transparent focus:ring-0 focus:outline-none resize-none"
+                    style="overflow: auto; max-height: 70vh"
+                    readonly>{{ $selectPage->content }}</textarea>
+                    
+                <div class="bg-white pt-2" style="font-size: 12px;">
+                    編集日時: {{ $selectPage->updated_at }}
                 </div>
                 
-                <button wire:click="$set('isShow', false)" style="cursor: pointer;">
-                    閉じる
-                </button>
+                <div style="display: flex; justify-content: flex-end;">
+                    <button wire:click="$set('isShow', false)" class="tool-button" style="font-size: 14px;">
+                        閉じる
+                    </button>
+                </div>
             </div>
         </div>
     </div>
     @endif
 </div>
-
-@script
-<script>
-    document.querySelectorAll('.page').forEach(function(page) {
-        page.addEventListener('mouseover', function() {
-            this.style.boxShadow = '0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22)';
-            this.querySelector('.toolbar').style.display = 'flex';
-        });
-        page.addEventListener('mouseout', function() {
-            this.style.boxShadow = '';
-            this.querySelector('.toolbar').style.display = '';
-        });
-    });
-    
-    document.querySelectorAll('.tool').forEach(function(tool) {
-        tool.addEventListener('mouseover', function() {
-            this.querySelector('.tooltip').style.display = 'block';
-        });
-        tool.addEventListener('mouseout', function() {
-            this.querySelector('.tooltip').style.display = '';
-        });
-    });
-</script>
-@endscript
