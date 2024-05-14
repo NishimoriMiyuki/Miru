@@ -43,6 +43,7 @@
             .page-header {
                 display: flex;
                 justify-content: space-between;
+                cursor: move;
             }
         
             .text-content {
@@ -50,7 +51,6 @@
                 max-height: calc(100% - 20px);
                 overflow: hidden;
                 position: relative;
-                cursor: pointer;
                 word-break: break-all;
             }
         
@@ -158,7 +158,7 @@
                         </x-dropdown>
                     </div>
                     <div class="text-content">
-                        <a wire:click="edit({{ $page }})">
+                        <a wire:click="edit({{ $page }})" style="cursor: pointer;">
                             <p class="font-bold">{{ $page->firstLine }}</p>
                             <p>{{ $page->restOfContent }}</p>
                         </a>

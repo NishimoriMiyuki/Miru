@@ -1,136 +1,115 @@
 <x-slot name="header">
     <x-board-header />
 </x-slot>
-
-<x-slot name="alert">
-    ゴミ箱内のボードは 7 日後に削除されます。
-</x-slot>
     
-<div class="h-full container">
+<div class="container">
     @if($boards->isEmpty())
-        <p>ゴミ箱にはボードがありません。</p>
+    <div style="padding: 50px 0; font-size: 22px;">
+        <p>ゴミ箱にボードがありません</p>
+    </div>
     @else
         <style>
             .board-container {
               display: grid;
-              grid-template-columns: repeat(auto-fill, minmax(225px, 1fr));
-              gap: 20px;
+              grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+              gap: 8px 4px;
               padding: 50px 0;
             }
             
             .board-container > * {
-                flex: 0 0 225px;
+                flex: 0 0 240px;
             }
             
             .board {
                 position: relative;
                 background-color: #fff;
                 border-radius: 8px;
-                box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
-                padding: 20px;
+                border: 1px solid #D1D5DB;
+                padding: 8px;
                 transition: all 0.3s cubic-bezier(.25,.8,.25,1);
                 display: flex;
                 flex-direction: column;
                 justify-content: space-between;
-                width: 225px;
-                height: 225px;
+                minmax-width: 240px;
+                height: 100px;
+            }
+            
+            .board:hover {
+                z-index: 999;
+                box-shadow: 0 0 5px 1px rgba(0,0,0,0.3);
+            }
+            
+            .board-header {
+                display: flex;
+                justify-content: flex-end;
             }
             
             .text-content {
+                flex-grow: 1;
                 max-height: calc(100% - 20px);
                 overflow: hidden;
                 position: relative;
                 word-break: break-all;
             }
-        
-            .toolbar {
-                display: flex;
-                justify-content: flex-end;
+            
+            .drop-down-button {
+                display: block;
+                width: 100%;
+                padding: 0.5rem 1rem;
+                text-align: start;
+                font-size: 0.875rem;
+                line-height: 1.25rem;
+                color: #4a4a4a;
+                transition: all 0.15s ease-in-out;
             }
             
-            .tool {
-                display: inline-block;
-                margin-right: 10px;
-                position: relative;
+            .drop-down-button:hover, .drop-down-button:focus {
+                background-color: #f2f2f2;
+                outline: none;
             }
             
-            .tool .tooltip {
-                display: none;
-                position: absolute;
-                background-color: #555;
-                color: #fff;
-                text-align: center;
-                padding: 5px 10px;
-                border-radius: 6px;
-                z-index: 1;
-                top: 100%; 
-                left: 50%; 
-                transform: translateX(-50%);
-                writing-mode: vertical-lr;
+            .tool-button {
+                padding: 4px 24px;
+                border-radius: 5px;
             }
             
-            .board .toolbar {
-                position: absolute;
-                bottom: 0;
-                right: 0;
-                display: none;
+            .tool-button:hover {
+                background-color: #f2f2f2;
             }
         </style>
         
+        <div>
+            <button wire:click="emptyTrash" class="tool-button" style="color: #1a73e8; font-size: 14px;" wire:confirm="ゴミ箱を空にしますか？ゴミ箱内のボードはすべて完全に削除されます。">ゴミ箱を空にする</button>
+        </div>
         <div class="board-container">
             @foreach($boards as $board)
                 <div class="board">
+                    <div class="board-header">
+                        <x-dropdown align="right" width="48">
+                            <x-slot name="trigger">
+                                <button type="button" class="tool">
+                                    <span class="material-symbols-outlined">
+                                        arrow_drop_down
+                                    </span>
+                                </button>
+                            </x-slot>
+                                
+                            <x-slot name="content">
+                                <button wire:click="restore({{ $board->id }})" style="font-size: 14px;" class="text-gray-600 drop-down-button">
+                                    ボードを復元
+                                </button>
+                                <button wire:click="forceDelete({{ $board->id }})" wire:confirm="永久に削除しますか？" style="font-size: 14px;" class="text-gray-600 drop-down-button">
+                                    永久に削除
+                                </button>
+                            </x-slot>
+                        </x-dropdown>
+                    </div>
                     <div class="text-content">
                         <p class="font-bold">{{ $board->name }}</p>
-                    </div>
-                    <div class="toolbar text-gray-300">
-                        <div class="tool">
-                            <button wire:click="forceDelete({{ $board->id }})" wire:confirm="永久に削除しますか？">
-                                <span class="material-symbols-outlined">
-                                    delete_forever
-                                </span>
-                            </button>
-                            <div class="tooltip">
-                                削除
-                            </div>
-                        </div>
-                        <div class="tool">
-                            <button wire:click="restore({{ $board->id }})">
-                                <span class="material-symbols-outlined">
-                                    restore_from_trash
-                                    </span>
-                            </button>
-                            <div class="tooltip">
-                                復元
-                            </div>
-                        </div>
+                        <p style="font-size: 12px; text-align: right;">問題数：{{ $board->boardRows->count() }}</p>
                     </div>
                 </div>
             @endforeach
         </div>
     @endif
 </div>
-
-@script
-<script>
-    document.querySelectorAll('.board').forEach(function(board) {
-        board.addEventListener('mouseover', function() {
-            this.style.boxShadow = '0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22)';
-            this.querySelector('.toolbar').style.display = 'flex';
-        });
-        board.addEventListener('mouseout', function() {
-            this.style.boxShadow = '';
-            this.querySelector('.toolbar').style.display = '';
-        });
-    });
-    
-    document.querySelectorAll('.tool').forEach(function(tool) {
-        tool.addEventListener('mouseover', function() {
-            this.querySelector('.tooltip').style.display = 'block';
-        });
-        tool.addEventListener('mouseout', function() {
-            this.querySelector('.tooltip').style.display = '';
-        });
-    });
-</script>
-@endscript
