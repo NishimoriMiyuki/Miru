@@ -210,7 +210,10 @@
             });
         }
     }
-
-    document.querySelectorAll('.board').forEach(setupListeners);
+    
+    // 呼ばなくて良い時にも呼ばれているので処理を変える必要がある
+    Livewire.hook('element.init', ({ component, el }) => {
+        document.querySelectorAll('.board').forEach(setupListeners);
+    })
 </script>
 @endscript
