@@ -10,19 +10,6 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\DB;
 use App\Models\User;
 
-Route::get('/db-test', function () {
-    try {
-        $user = User::first();
-        if($user){
-            echo "Successfully connected to the DB and fetched user: " . $user->name;
-        }else{
-            die("Could not find any users in the database. Please check your configuration.");
-        }
-    } catch (\Exception $e) {
-        die("Could not open connection to database server. Error: " . $e->getMessage());
-    }
-});
-
 Route::get('/', function () 
 {
     return Auth::check() ? redirect()->route('pages.index') : view('auth.register');
@@ -37,6 +24,7 @@ Route::middleware('auth')->group(function () {
 # Pagesルート
 Route::get('/pages', PageIndex::class)->name('pages.index')->middleware(['auth', 'verified']);
 Route::get('/pages/trashed', PageTrashed::class)->name('pages.trashed')->middleware(['auth', 'verified']);
+Route::view('/public-pages', 'public-pages')->name('pages.public')->middleware(['auth', 'verified']);
     
 # boardsルート
 Route::get('/boards', BoardIndex::class)->name('boards.index')->middleware(['auth', 'verified']);
