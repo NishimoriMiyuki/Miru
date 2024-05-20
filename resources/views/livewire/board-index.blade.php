@@ -1,5 +1,12 @@
 <x-slot name="header">
-    <x-board-header />
+    <x-header title="ボード">
+        <x-slot name="content">
+            <a href="{{ route('boards.index') }}" class="grid-item">ボード</a>
+            <a href="{{ route('pages.index') }}" class="grid-item">メモ</a>
+            <a href="{{ route('pages.public') }}" class="grid-item">公開メモ</a>
+            <a href="{{ route('boards.trashed') }}" class="grid-item">ゴミ箱</a>
+        </x-slot>
+    </x-header>
 </x-slot>
 
 <div class="container">

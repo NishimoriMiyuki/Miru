@@ -1,6 +1,12 @@
 <x-app-layout>
     <x-slot name="header">
-        <x-profile-header />
+        <x-header title="プロフィール">
+            <x-slot name="content">
+                <a href="{{ route('pages.index') }}" class="grid-item">メモ</a>
+                <a href="{{ route('pages.public') }}" class="grid-item">公開メモ</a>
+                <a href="{{ route('boards.index') }}" class="grid-item">ボード</a>
+            </x-slot>
+        </x-header>
     </x-slot>
 
     <div class="py-12">

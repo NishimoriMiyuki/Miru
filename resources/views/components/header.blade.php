@@ -1,3 +1,5 @@
+@props(['title'])
+
 <div x-data="{ open: false }" x-init="open = false">
     
     <style>
@@ -54,14 +56,14 @@
                 x-transition:leave-start="opacity-100 transform translate-x-0"
                 x-transition:leave-end="opacity-0 transform -translate-x-full">
                 <div class="grid-container">
-                    <a href="{{ route('boards.index') }}" class="grid-item">ボード</a>
-                    <a href="{{ route('pages.index') }}" class="grid-item">メモ</a>
-                    <a href="{{ route('boards.trashed') }}" class="grid-item">ゴミ箱</a>
+                    {{ $content }}
                 </div>
             </aside>
             
             <!-- ヘッダーに名前を表示 -->
-            <h1 class="text-xl font-bold">{{ $title ?? 'ボード' }}</h1>
+            @if($title)
+                <h1 class="text-xl font-bold">{{ $title }}</h1>
+            @endif
         </div>
         
         <!-- ユーザーの設定メニュー -->
