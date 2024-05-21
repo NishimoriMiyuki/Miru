@@ -19,9 +19,18 @@ class PublicPageList extends Component
     
     public function render()
     {
-        $pages = Page::where('is_public', true)
-            ->where('content', 'like', '%' . $this->searchTerm . '%')
-            ->paginate(10);
+        $query = Page::isPublic(true)->updatedOrder();
+
+        if ($this->searchTerm) {
+            // 全角スペースと半角スペースで分割
+            $keywords = preg_split('/[\s　]+/u', $this->searchTerm, -1, PREG_SPLIT_NO_EMPTY);
+            
+            foreach ($keywords as $keyword) {
+                $query->where('content', 'like', '%' . $keyword . '%');
+            }
+        }
+
+        $pages = $query->paginate(10);
 
         return view('livewire.public-page-list', [
             'pages' => $pages,

@@ -22,7 +22,7 @@ class PageCreate extends Component
     
     public function create()
     {
-        if (empty($this->content))
+        if (empty(preg_replace('/\s|　/', '', $this->content)))
         {
             $this->toggleIsOpen(false);
             return;
